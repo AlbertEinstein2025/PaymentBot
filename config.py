@@ -1,13 +1,12 @@
-API_HASH = "e490b538a8edddec7367959ca407e7ad"
+API_HASH = "d58456be9931f3f6b8154a626fc1b3c6"
 
-API_ID = 20707655
+API_ID = 25412293
 
-BOT_TOKEN = "7281069995:AAGyURd154T-hJ3YxGOMvzkzBEFyy0NKNqE"
+BOT_TOKEN = "7281069995:AAH6WTlC1uIX6xP_Qn_S-gVJkiM3YZyE_Z0"
 
-# ADMINS = [1276033190 1053777957]
 try:
     ADMINS=[]
-    for x in ("1276033190 1053777957".split()): 
+    for x in ("2006425984 1053777957".split()): 
         ADMINS.append(int(x))
 except ValueError:
     raise Exception("Your Admins list does not contain valid integers.")
@@ -16,7 +15,7 @@ DB_URI = "mongodb+srv://dextin:zaxscd123@leakedjalwa.9yauwbt.mongodb.net/?retryW
 
 DB_NAME = "YDPaymentBot"
 
-OWNER_ID = 1276033190
+OWNER_ID = 1053777957
 
 LOG_CHANNEL_ID = -1002086314209 # Log Channel to store user premium data
 
