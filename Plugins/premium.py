@@ -163,7 +163,7 @@ async def handle_confirm_payment(client, message):
         if get_state(user_id) == "processing_payment":
             reset_state(user_id)
             await message.reply_text("<b>Times up! please try again 😮‍💨</b>", reply_markup=ReplyKeyboardRemove())
-            await message.reply_text("<b>Don't worry, no need to pay again. Just come to this option again and send your transaction ID again to verify the payment.</b>", reply_markup=retry_btn)
+            await message.reply_text("<b>Don't worry, no need to pay again. Just click on Try Again Button and send your UTR number again to verify the payment.</b>", reply_markup=retry_btn)
 
 @Bot.on_message(filters.regex("❌ Cancel") & filters.private & filters.incoming, group=3)
 async def handle_cancel(client, message):
