@@ -6,3 +6,6 @@ python-dotenv
 requests
 datetime
 pytz
+pandas 
+openpyxl 
+googletrans==4.0.0-rc1
