@@ -1,0 +1,89 @@
+import datetime
+import pytz
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+from config import * 
+
+client = AsyncIOMotorClient(DATABASE_URI)
+mydb = client[DATABASE_NAME]
+
+client2 = AsyncIOMotorClient(SECONDDB_URI)
+mydb2 = client2[DATABASE_NAME]
+
+#direct importing from utils causing loop, directly added here so no error should come.
+def extract_value_and_unit(ts):
+        value = ""
+        unit = ""
+
+        index = 0
+        while index < len(ts) and ts[index].isdigit():
+            value += ts[index]
+            index += 1
+
+        unit = ts[index:]
+
+        if value:
+            value = int(value)
+
+        return value, unit
+
+async def get_seconds(time_string):
+    value, unit = extract_value_and_unit(time_string)
+
+    if unit == 's':
+        return value
+    elif unit == 'min':
+        return value * 60
+    elif unit == 'hour':
+        return value * 3600
+    elif unit == 'day':
+        return value * 86400
+    elif unit == 'month':
+        return value * 86400 * 30
+    elif unit == 'year':
+        return value * 86400 * 365
+    else:
+        return 0
+
+class Database:
+    
+    def __init__(self):
+        self.col = mydb.users
+        self.users = mydb.uersz
+
+        self.col2 = mydb2.users
+        self.users2 = mydb2.uersz
+
+    def new_user(self, id, name):
+        return dict(
+            id = id,
+            name = name,
+            ban_status=dict(
+                is_banned=False,
+                ban_reason=""
+            )
+        )
+    async def get_user(self, user_id):
+        user_data = await self.users.find_one({"id": user_id})
+        user_data2 = await self.users2.find_one({"id": user_id})
+        return user_data, user_data2
+        
+    async def update_user(self, user_data):
+        await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+        await self.users2.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+
+    async def has_premium_access(self, user_id):
+        user_data = await self.get_user(user_id)
+        if user_data:
+            expiry_time = user_data.get("expiry_time")
+            if expiry_time is None:
+                return False
+            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                return True
+            else:
+                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                await self.users2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+        return False
+
+
+db = Database()
