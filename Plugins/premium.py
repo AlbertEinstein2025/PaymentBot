@@ -82,7 +82,7 @@ async def start(client, message):
     await asyncio.sleep(2.5)
     await sticker_message.delete()
     
-    start_message = script.START_MESSAGE.format(message.user_first_name, bot_name) if user_first_name else script.START_MESSAGE2.format(bot_name)
+    start_message = script.START_MESSAGE.format(user_first_name, bot_name) if user_first_name else script.START_MESSAGE2.format(bot_name)
 
     await message.reply_text(
         start_message,
