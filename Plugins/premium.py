@@ -268,7 +268,7 @@ async def handle_utr_input(client, message):
                         try:
                             await client.send_message(
                                 chat_id=admin_id,
-                                text=f"New premium user!\n\nUser ID: {user_id}\nPlan: {success_message}\n\n Player Name: {payer}\n\n Amount : ₹{amount}"
+                                text=f"<b>New premium user!\n\nUser ID: {user_id}\nPlan: {success_message}\n\n Player Name: {payer}\n\n Amount : ₹{amount}</b>"
                             )
                         except Exception as e:
                             print(f"Error sending notification to admin {admin_id}: {e}")
@@ -284,8 +284,8 @@ async def handle_utr_input(client, message):
                     username = user.username
                     subscription_type = "YD Premium Plans"
                     user_mention = user.mention
-
-                    await add_used_utr(subscription_type, payer, username, user_id, utr, amount)
+                    
+                    await add_used_utr(subscription_type, payer, username, user_id, utr, amount, datetime.datetime.now().strftime("%Y-%m-%d"))
                     await client.send_message(LOG_CHANNEL_ID, 
                         text=f"#Added_Premium\n\n"
                             f"👤 User: {user_mention}\n"
