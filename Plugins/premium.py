@@ -82,7 +82,7 @@ async def start(client, message):
     await asyncio.sleep(2.5)
     await sticker_message.delete()
     
-    start_message = script.START_MESSAGE if user_first_name else script.START_MESSAGE2
+    start_message = script.START_MESSAGE.format(query.user_first_name, bot_name) if user_first_name else script.START_MESSAGE2.format(bot_name)
 
     await message.reply_text(
         start_message,
@@ -99,9 +99,8 @@ async def start(client, message):
 
 @Bot.on_callback_query(filters.regex(r'^help$'))
 async def help_callback(client, query):
-    user = query.from_user.mention
     await query.message.edit(
-        HELP_TXT,
+        script.HELP_TXT.format(query.from_user.mention),
         reply_markup=InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")],  # New callback for premium purchase
@@ -113,7 +112,7 @@ async def help_callback(client, query):
 @Bot.on_callback_query(filters.regex(r'^about$'))
 async def about_callback(client, query):
     await query.message.edit_text(
-        ABOUT_TXT,
+        script.ABOUT_TXT.format(client.me.first_name),
         reply_markup=InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
@@ -123,9 +122,8 @@ async def about_callback(client, query):
     )
 @Bot.on_callback_query(filters.regex(r'^premium_plans$'))
 async def premium_plans_callback(client, query):
-    user = query.from_user.mention
     await query.message.edit(
-        PREMIUM_PLANS,
+        script.PREMIUM_PLANS.format(query.from_user.mention),
         reply_markup=InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")],  # New callback for premium purchase
@@ -136,7 +134,6 @@ async def premium_plans_callback(client, query):
 
 @Bot.on_callback_query(filters.regex(r'^buy_premium$'))
 async def buy_premium(client, query):
-    user = query.from_user.mention
     qr_code_url = "https://te.legra.ph/file/c752fe552eba09dd31cb0.jpg" 
     confirm_payment_keyboard = ReplyKeyboardMarkup(
         [
@@ -149,7 +146,7 @@ async def buy_premium(client, query):
     await client.send_photo(
         query.message.chat.id,
         qr_code_url,
-        caption=PAYMENT,
+        caption=script.PAYMENT.format(query.from_user.mention),
         reply_markup=confirm_payment_keyboard
     )
     set_state(query.from_user.id, "waiting_for_utr")
@@ -278,9 +275,9 @@ async def handle_utr_input(client, message):
 
 
                     if current_time_ist and new_expiry_time_ist:
-                        VERIFY_Text = PAYMENT_VERIFIED
+                        VERIFY_Text = script.PAYMENT_VERIFIED.format(amount, payer, success_message)
                     else:
-                        VERIFY_Text = PAYMENT_VERIFIED2
+                        VERIFY_Text = script.PAYMENT_VERIFIED2.format(amount, payer, success_message)
 
                     await verifying_message.edit_text(VERIFY_Text)
                     user = await client.get_users(user_id)

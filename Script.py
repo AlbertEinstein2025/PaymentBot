@@ -1,26 +1,26 @@
 import os
 
 class script(object):
-    START_MESSAGE = f"""
-<b>Hi {user_first_name}, 
+    START_MESSAGE = """
+<b>Hi {},
 
-Welcome to {bot_name} 😊
+Welcome to {} 😊
 
 <blockquote>We offer a variety of exclusive subscriptions to suit your interests.
 
 Click below to browse our plans and unlock the premium experience! ✨</blockquote></b>"""
 
-    START_MESSAGE2 = f"""
+    START_MESSAGE2 = """
 <b>Hi, 
 
-Welcome to {bot_name} 😊
+Welcome to {} 😊
 
 <blockquote>We offer a variety of exclusive subscriptions to suit your interests.
 
 Click below to browse our plans and unlock the premium experience! ✨</blockquote></b>"""
 
-    HELP_TXT = f"""
-<b>👋 ʜᴇʏ {user},
+    HELP_TXT = """
+<b>👋 ʜᴇʏ {},
 
 <blockquote>Tʜɪꜱ ɪꜱ ᴀɴ ᴀᴅᴠᴀɴᴄᴇ ᴘᴀʏᴍᴇɴᴛ ᴠᴇʀɪғɪᴇʀ + ᴘʀᴇᴍɪᴜᴍ ᴍᴀɴᴀɢᴇʀ ʙᴏᴛ.
 
@@ -30,13 +30,13 @@ Aғᴛᴇʀ ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ᴏғ ᴘᴀʏᴍᴇɴᴛ ᴠᴇʀɪғɪ
 
 Fᴏʀ ᴀɴʏ ǫᴜᴇʀɪᴇꜱ ᴍꜱɢ: @Mr_SpidyBot</b>"""
 
-    ABOUT_TXT = f"""<b><blockquote>
-🤖 Mʏ Nᴀᴍᴇ : {client.me.first_name}
+    ABOUT_TXT = """<b><blockquote>
+🤖 Mʏ Nᴀᴍᴇ : {}
 😎 Cʀᴇᴀᴛᴏʀ : <a href='https://t.me/Mr_SPIDY'>⚝𝗠𝗿.𝗦𝗣𝗜𝗗𝗬⚝</a>
 🛠️ A ᴘʀᴏᴊᴇᴄᴛ ʙʏ <a href='https://t.me/YourDemandZone'>YᴏᴜʀDᴇᴍᴀɴᴅZᴏɴᴇ</a></b></blockquote>"""
 
-    PREMIUM_PLANS = f"""
-<b>👋 ʜᴇʏ {user},
+    PREMIUM_PLANS = """
+<b>👋 ʜᴇʏ {},
 
 <blockquote>🎖️ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʀᴇᴍɪᴜᴍ ᴘʟᴀɴꜱ :</blockquote>
  ❏ 𝟶𝟷𝟻₹    ➠    𝟶𝟷 ᴡᴇᴇᴋꜱ
@@ -49,8 +49,8 @@ Fᴏʀ ᴀɴʏ ǫᴜᴇʀɪᴇꜱ ᴍꜱɢ: @Mr_SpidyBot</b>"""
 Cʜᴏᴏꜱᴇ ᴀɴʏ ᴘʟᴀɴ ᴀᴄᴄᴏʀᴅɪɴɢ ᴛᴏ ʏᴏᴜʀ ᴅᴇꜱɪʀᴇ.
 Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 
-    PAYMENT = f"""
-<b>👋 ʜᴇʏ {user},
+    PAYMENT = """
+<b>👋 ʜᴇʏ {},
 
 <blockquote><u>Tᴏ ᴄᴏᴍᴘʟᴇᴛᴇ ʏᴏᴜʀ ꜱᴜʙꜱᴄʀɪᴘᴛɪᴏɴ:</u>
 
@@ -62,25 +62,25 @@ Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 🆔 UPI ID: 
 `bharatpe.8p0y0j5O2k82600@fbpe` (Tap to copy)</b>"""
 
-    PAYMENT_VERIFIED = f"""
+    PAYMENT_VERIFIED = """
 <b>🎉 Payment Verified! 🎉
 
-<blockquote>Amount Received: ₹{amount}
-Payer: {payer}</blockquote>
+<blockquote>Amount Received: ₹{}
+Payer: {}</blockquote>
 
-<blockquote>{success_message}
+<blockquote>{}
 
 🥳 Congratulations! Your premium subscription is now active on Both Bots until {new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')}. ✨</blockquote>
 
 To Check Your Plan: Go to Both Bot and send /myplan for getting subscription info.⚡️</b>"""
 
-    PAYMENT_VERIFIED2 = f"""
+    PAYMENT_VERIFIED2 = """
 <b>🎉 Payment Verified! 🎉
 
-Amount Received: ₹{amount}
-Payer: {payer}
+Amount Received: ₹{}
+Payer: {}
 
-{success_message}
+{}
 
 There was an error activating your premium subscription. Please contact the admin @Mr_SpidyBot.
 
