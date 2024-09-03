@@ -12,34 +12,21 @@ import translation
 import datetime
 from pyrogram.types import ReplyKeyboardRemove
 
-@Bot.on_message(filters.command(["export", "exportall"]) & filters.chat(ADMINS))
+@Bot.on_message(filters.command("export") & filters.chat(OWNER_ID))
 async def handle_export_payments(client, message):
-    command = message.command[0]
-    
-    if command == "export":
-        # Get today's date in the correct format
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        # Filter payments for today
-        all_payments = used_utrs.find({"Date": today})
-    elif command == "exportall":
-        all_payments = used_utrs.find()
+    all_payments = used_utrs.find()
 
     payment_data = [payment for payment in all_payments]
 
-    if not payment_data:
-        await message.reply_text("No payments found.")
-        return
-
     df = pd.DataFrame(payment_data)
     
-    # Drop MongoDB ID field if it exists
+    df = df.drop('_id', axis=1)
+
     if '_id' in df.columns:
         df = df.drop('_id', axis=1)
-
-    # Ensure UTR is treated as a string
     df['UTR Number'] = df['UTR Number'].astype(str)
 
-    # Apply formatting
+    # Apply formatting 
     def highlight_first_row(row):
         if row.name == 0:
             return ['background-color: lightgreen; font-weight: bold'] * len(row)
@@ -50,8 +37,7 @@ async def handle_export_payments(client, message):
     styled_df = styled_df.set_properties(**{'text-align': 'center'})
     styled_df = styled_df.set_table_styles([{'selector': 'th', 'props': [('text-align', 'center')]}])
 
-    file_name = f"{command}_payments.xlsx"
-    writer = pd.ExcelWriter(file_name, engine='openpyxl')
+    writer = pd.ExcelWriter("payments.xlsx", engine='openpyxl')
     styled_df.to_excel(writer, sheet_name='Payments', index=False)
 
     worksheet = writer.sheets['Payments']
@@ -59,12 +45,13 @@ async def handle_export_payments(client, message):
     for column in df:
         column_length = max(df[column].astype(str).map(len).max(), len(column))
         col_idx = df.columns.get_loc(column)
+
         col_letter = openpyxl.utils.get_column_letter(col_idx + 1) 
         worksheet.column_dimensions[col_letter].width = column_length + 5
 
     writer.close()
 
-    await message.reply_document(file_name)
+    await message.reply_document("payments.xlsx")
 
 
 @Bot.on_message(filters.command("start"))
@@ -285,7 +272,7 @@ async def handle_utr_input(client, message):
                     subscription_type = "YD Premium Plans"
                     user_mention = user.mention
                     
-                    await add_used_utr(subscription_type, payer, username, user_id, utr, amount, datetime.datetime.now().strftime("%Y-%m-%d"))
+                    await add_used_utr(subscription_type, payer, username, user_id, utr, amount)
                     await client.send_message(LOG_CHANNEL_ID, 
                         text=f"#Added_Premium\n\n"
                             f"👤 User: {user_mention}\n"

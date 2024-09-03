@@ -28,7 +28,6 @@ async def add_used_utr(subscription_type, payer, username, user_id, utr, amount)
         'User ID': user_id,
         'UTR Number': utr,
         'Amount': amount,
-        'Date': date
         
     })
 
