@@ -68,7 +68,7 @@ Payer: {}</blockquote>
 
 <blockquote>{}
 
-🥳 Congratulations! Your premium subscription is now active on Both Bots until {new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')}. ✨</blockquote>
+🥳 Congratulations! Your premium subscription is now active on Both Bots until {}. ✨</blockquote>
 
 To Check Your Plan: Go to Both Bot and send /myplan for getting subscription info.⚡️</b>"""
 

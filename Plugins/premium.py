@@ -92,7 +92,7 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                [InlineKeyboardButton("🎖️ Check Plans", callback_data="premium_plans")]
+                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")]
             ]
         )
     )
@@ -273,9 +273,9 @@ async def handle_utr_input(client, message):
                         except Exception as e:
                             print(f"Error sending notification to admin {admin_id}: {e}")
 
-
+                    expiry_time = new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')
                     if current_time_ist and new_expiry_time_ist:
-                        VERIFY_Text = script.PAYMENT_VERIFIED.format(amount, payer, success_message)
+                        VERIFY_Text = script.PAYMENT_VERIFIED.format(amount, payer, success_message, expiry_time)
                     else:
                         VERIFY_Text = script.PAYMENT_VERIFIED2.format(amount, payer, success_message)
 
@@ -328,10 +328,10 @@ Click below to browse our plans and unlock the premium experience! ✨</b>"""
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton('ʜᴇʟᴘ♻️', callback_data='help'),
+                    InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                [InlineKeyboardButton("🎖️ Check Plans", callback_data="premium_plans")]
+                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")]
             ]
         )
     )
