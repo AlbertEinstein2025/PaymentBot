@@ -89,7 +89,7 @@ async def start(client, message):
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton('ʜᴇʟᴘ♻️', callback_data='help'),
+                    InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
                 [InlineKeyboardButton("🎖️ Check Plans", callback_data="premium_plans")]
@@ -97,17 +97,17 @@ async def start(client, message):
         )
     )
 
-@Bot.on_callback_query(filters.regex(r'^help$'))
-async def help_callback(client, query):
-    await query.message.edit(
-        script.HELP_TXT.format(query.from_user.mention),
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")],  # New callback for premium purchase
-                [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
-            ]
-        )
-    )
+# @Bot.on_callback_query(filters.regex(r'^help$'))
+# async def help_callback(client, query):
+#     await query.message.edit(
+#         script.HELP_TXT.format(query.from_user.mention),
+#         reply_markup=InlineKeyboardMarkup(
+#             [
+#                 [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")],  # New callback for premium purchase
+#                 [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
+#             ]
+#         )
+#     )
 
 @Bot.on_callback_query(filters.regex(r'^about$'))
 async def about_callback(client, query):
