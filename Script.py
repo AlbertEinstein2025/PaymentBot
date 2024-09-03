@@ -21,18 +21,17 @@ Click below to browse our plans and unlock the premium experience! ✨</blockquo
 
 
     ABOUT_TXT = """<b>
-🤖 Mʏ Nᴀᴍᴇ : {}
-😎 Cʀᴇᴀᴛᴏʀ : <a href='https://t.me/Mr_SPIDY'>⚝𝗠𝗿.𝗦𝗣𝗜𝗗𝗬⚝</a>
-
-<blockquote>Tʜɪꜱ ɪꜱ ᴀɴ ᴀᴅᴠᴀɴᴄᴇ ᴘᴀʏᴍᴇɴᴛ ᴠᴇʀɪғɪᴇʀ + ᴘʀᴇᴍɪᴜᴍ ᴍᴀɴᴀɢᴇʀ ʙᴏᴛ.
+Tʜɪꜱ ɪꜱ ᴀɴ ᴀᴅᴠᴀɴᴄᴇ ᴘᴀʏᴍᴇɴᴛ ᴠᴇʀɪғɪᴇʀ + ᴘʀᴇᴍɪᴜᴍ ᴍᴀɴᴀɢᴇʀ ʙᴏᴛ.
 
 Jᴜꜱᴛ ᴍᴀᴋᴇ ᴀ ᴘᴀʏᴍᴇɴᴛ ᴀɴᴅ ᴠᴇʀɪғʏ ʏᴏᴜʀ ᴘᴀʏᴍᴇɴᴛ ᴠɪᴀ ᴘʀᴏᴠɪᴅɪɴɢ ʏᴏᴜʀ ᴛʀᴀɴꜱᴄᴀᴛɪᴏɴ UTR ID ɴᴜᴍʙᴇʀ.
 
 Aғᴛᴇʀ ᴄᴏᴍᴘʟᴇᴛɪᴏɴ ᴏғ ᴘᴀʏᴍᴇɴᴛ ᴠᴇʀɪғɪᴄᴀᴛɪᴏɴ, Iᴛ ᴡɪʟʟ ᴅɪʀᴇᴄᴛʟʏ ᴀᴅᴅᴇᴅ ᴘʀᴇᴍɪᴜᴍ ᴛᴏ ʏᴏᴜʀ ᴀᴄᴄ ᴏɴ ʙᴏᴛʜ Bᴏᴛꜱ @YDAutoBot & @EvaMariaXbot.
 
-Fᴏʀ ᴀɴʏ ǫᴜᴇʀɪᴇꜱ ᴍꜱɢ: @Mr_SpidyBot
+<blockquote>🤖 Mʏ Nᴀᴍᴇ : {}
+😎 Cʀᴇᴀᴛᴏʀ : <a href='https://t.me/Mr_SPIDY'>⚝𝗠𝗿.𝗦𝗣𝗜𝗗𝗬⚝</a>
+🛠️ A ᴘʀᴏᴊᴇᴄᴛ ʙʏ <a href='https://t.me/YourDemandZone'>YᴏᴜʀDᴇᴍᴀɴᴅZᴏɴᴇ ⚡️</a></blockquote>
 
-🛠️ A ᴘʀᴏᴊᴇᴄᴛ ʙʏ <a href='https://t.me/YourDemandZone'>YᴏᴜʀDᴇᴍᴀɴᴅZᴏɴᴇ ⚡️</a></b>"""
+Fᴏʀ ᴀɴʏ ǫᴜᴇʀɪᴇꜱ ᴍꜱɢ: @Mr_SpidyBot</b>"""
 
     PREMIUM_PLANS = """
 <b>👋 ʜᴇʏ {},
