@@ -41,11 +41,20 @@ class PDF(FPDF):
         # Add text to the top right
         self.set_font('Arial', '', 9)
         self.set_text_color(0, 0, 0)  # Black color
-        self.cell(0, 10, 'Group Name: YD Movie Zone', 0, 1, 'R')
-        self.cell(0, 10, 'Grp Username: @YDMovieZone', 0, 1, 'R')
-        self.cell(0, 10, 'Contact us: @Mr_SpidyBot', 0, 1, 'R')
-        self.ln(5)
+        
+        # Calculate X position to align text to the right
+        page_width = self.w - 10  # Leave some margin from the right
+        self.set_xy(page_width - 70, 10)  # Adjust X and Y position
 
+        # Print the right-aligned text
+        self.cell(0, 10, 'Group Name: YD Movie Zone', 0, 1, 'R')
+        self.set_xy(page_width - 70, 20)
+        self.cell(0, 10, 'Grp Username: @YDMovieZone', 0, 1, 'R')
+        self.set_xy(page_width - 70, 30)
+        self.cell(0, 10, 'Contact us: @Mr_SpidyBot', 0, 1, 'R')
+        
+        self.ln(15)
+        
     def footer(self):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
