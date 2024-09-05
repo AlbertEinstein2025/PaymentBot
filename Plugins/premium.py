@@ -34,13 +34,13 @@ class PDF(FPDF):
         self.set_font('Arial', 'B', 16)
         self.set_text_color(0, 102, 204)  # Dark blue color
         self.cell(0, 10, 'Payment Receipt', 0, 1, 'C')
-        self.ln(20)
+        self.ln(20)  # Extra space after the title
 
     def footer(self):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
         # Select Arial italic 8
-        self.set_font('Arial', 'I', 11)
+        self.set_font('Arial', 'I', 8)
         self.set_text_color(128, 128, 128)  # Gray color
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
@@ -292,7 +292,7 @@ async def handle_utr_input(client, message):
                     # Title Section
                     pdf.set_font('Arial', 'B', 14)
                     pdf.set_fill_color(0, 153, 255)  # Light blue background
-                    pdf.cell(0, 10, 'YD Premium Subscription', 0, 1, 'C', 1)
+                    pdf.cell(0, 10, 'Payment Receipt', 0, 1, 'C', 1)
                     pdf.ln(10)
 
                     # Customer Information Section
