@@ -145,7 +145,7 @@ async def start(client, message):
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
                 [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
-                [[InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]]
+                [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]
             ]
         )
     )
