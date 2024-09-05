@@ -291,8 +291,8 @@ async def handle_utr_input(client, message):
 
                     # Title Section
                     pdf.set_font('Arial', 'B', 14)
-                    pdf.set_fill_color(255, 0, 0)  # Red background
-                    pdf.cell(0, 10, 'Payment Receipt', 0, 1, 'C', 1)
+                    pdf.set_fill_color(0, 153, 255)  # Light blue background
+                    pdf.cell(0, 10, 'YD Premium Subscription', 0, 1, 'C', 1)
                     pdf.ln(10)
 
                     # Customer Information Section
@@ -301,7 +301,7 @@ async def handle_utr_input(client, message):
                     pdf.cell(0, 10, 'Customer Information', 0, 1, 'L', 1)
                     pdf.set_font('Arial', '', 12)
                     pdf.set_fill_color(255, 255, 255)  # White background for text
-                    pdf.cell(0, 10, f'Customer Name: {username}', ln=True)
+                    pdf.cell(0, 10, f'Customer Name: {payer}', ln=True)
                     pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
                     pdf.ln(10)
 
@@ -310,7 +310,6 @@ async def handle_utr_input(client, message):
                     pdf.set_fill_color(204, 255, 204)  # Light green background
                     pdf.cell(0, 10, 'Transaction Details', 0, 1, 'L', 1)
                     pdf.set_font('Arial', '', 12)
-                    pdf.cell(0, 10, f'Payer Name: {payer}', ln=True)
                     pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
                     pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                     pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
