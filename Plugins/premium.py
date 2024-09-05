@@ -215,9 +215,9 @@ async def handle_utr_input(client, message):
 
         await message.delete()
         
-        # if await is_utr_used(utr):
-        #    await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
-        #    return
+        if await is_utr_used(utr):
+           await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
+           return
         verification_result = verify_payment(utr)
 
         if verification_result:
