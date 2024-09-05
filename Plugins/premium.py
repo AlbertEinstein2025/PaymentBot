@@ -276,7 +276,7 @@ async def handle_utr_input(client, message):
                     pdf.set_font('Arial', 'B', 10)
                     pdf.cell(100, 10, 'Transaction Details', ln=True)
                     pdf.set_font('Arial', '', 10)
-                    pdf.cell(100, 10, f'Payment Amount: ₹{amount}', ln=True)
+                    pdf.cell(100, 10, f'Payment Amount: {amount}', ln=True)
                     pdf.cell(100, 10, f'Transaction ID: {utr}', ln=True)
                     pdf.cell(100, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
                     pdf.cell(100, 10, f'Paid by App: {app}', ln=True)
