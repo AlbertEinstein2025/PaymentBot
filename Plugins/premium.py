@@ -29,19 +29,25 @@ download_image(image_url, local_filename)
 
 class PDF(FPDF):
     def header(self):
+        # Save the current x position
+        x_before_logo = self.get_x()
+        
         # Add logo
         self.image('logo.png', 10, 8, 33)
-        self.set_font('Arial', 'B', 16)
+        
+        # Add the header text
+        self.set_font('Arial', 'B', 14)
         self.set_text_color(255, 0, 0)  # Red color
+        self.set_x(50)  # Adjust x position for header text to be centered
         self.cell(0, 10, 'Payment Receipt', 0, 1, 'C')
         self.ln(20)
 
         # Add text to the top right
-        self.set_font('Arial', '', 12)
+        self.set_x(160)  # Move to the right side
+        self.set_font('Arial', '', 10)
         self.set_text_color(0, 0, 0)  # Black color
-        self.set_x(-100)  # Move to the right side
         self.cell(0, 10, 'Group Name: YD Movie Zone', 0, 1, 'R')
-        self.cell(0, 10, 'Group Username: @YDMovieZone', 0, 1, 'R')
+        self.cell(0, 10, 'Grp Username: @YDMovieZone', 0, 1, 'R')
         self.cell(0, 10, 'Contact us: @Mr_SpidyBot', 0, 1, 'R')
         self.ln(10)
 
@@ -49,7 +55,7 @@ class PDF(FPDF):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
         # Select Arial italic 8
-        self.set_font('Arial', 'B', 11)
+        self.set_font('Arial', 'I', 8)
         self.set_text_color(128, 128, 128)
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
