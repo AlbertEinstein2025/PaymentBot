@@ -40,17 +40,25 @@ class PDF(FPDF):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
         # Select Arial italic 8
-        self.set_font('Arial', 'B', 10)
-        self.set_text_color(128, 128, 128)  # Gray color
+        self.set_font('Arial', 'I', 11)
+        self.set_text_color(128, 128, 128)
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
 
     def add_border(self):
         # Add a border around the entire page
-        self.set_draw_color(0, 0, 0)  # Black color for the border
-        self.set_line_width(1)  # Border thickness
+        self.set_draw_color(0, 102, 204)  # Dark blue color for the border
+        self.set_line_width(2)  # Border thickness
         # Draw the border (x, y, width, height)
-        self.rect(10, 10, self.w - 20, self.h - 20)
+        self.rect(5, 5, self.w - 10, self.h - 10)
+
+    def add_section_box(self, title, color):
+        # Add a colored background box for a section title
+        self.set_fill_color(*color)
+        self.set_font('Arial', 'B', 14)
+        self.cell(0, 10, title, 0, 1, 'L', 1)
+        self.set_font('Arial', '', 12)
+        self.set_fill_color(255, 255, 255)  # Reset to white for content
 
 @Bot.on_message(filters.command("export") & filters.chat(OWNER_ID))
 async def handle_export_payments(client, message):
@@ -293,30 +301,25 @@ async def handle_utr_input(client, message):
 
                     # Generate PDF receipt
                     pdf = PDF()
-                    pdf_filename = f"payment_receipt_{utr}.pdf"
                     pdf.add_page()
 
+                    pdf.add_border()
+
                     # Title Section
-                    pdf.set_font('Arial', 'B', 14)
-                    pdf.set_fill_color(0, 153, 255)  # Light blue background
-                    pdf.cell(0, 10, 'YD Premium Subscription', 0, 1, 'C', 1)
+                    pdf.set_font('Arial', 'B', 18)
+                    pdf.set_fill_color(255, 0, 0)  # Red background
+                    pdf.set_text_color(255, 255, 255)  # White text
+                    pdf.cell(0, 15, 'YD Premium Subscription', 0, 1, 'C', 1)
                     pdf.ln(10)
 
                     # Customer Information Section
-                    pdf.set_font('Arial', 'B', 12)
-                    pdf.set_fill_color(204, 204, 255)  # Light purple background
-                    pdf.cell(0, 10, 'Customer Information', 0, 1, 'L', 1)
-                    pdf.set_font('Arial', '', 12)
-                    pdf.set_fill_color(255, 255, 255)  # White background for text
-                    pdf.cell(0, 10, f'Customer Name: {payer}', ln=True)
+                    pdf.add_section_box('Customer Information', (204, 204, 255))  # Light purple background
+                    pdf.cell(0, 10, f'Customer Name: {username}', ln=True)
                     pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
                     pdf.ln(10)
 
                     # Transaction Details Section
-                    pdf.set_font('Arial', 'B', 12)
-                    pdf.set_fill_color(204, 255, 204)  # Light green background
-                    pdf.cell(0, 10, 'Transaction Details', 0, 1, 'L', 1)
-                    pdf.set_font('Arial', '', 12)
+                    pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
                     pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
                     pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                     pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
@@ -337,6 +340,7 @@ async def handle_utr_input(client, message):
                     pdf.cell(50, 10, str(amount), border=1, fill=True, ln=True)
 
                     # Save PDF
+                    pdf_filename = f"payment_receipt_{utr}.pdf"
                     pdf.output(pdf_filename)
 
                     for admin_id in ADMINS:
