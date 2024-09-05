@@ -36,6 +36,15 @@ class PDF(FPDF):
         self.cell(0, 10, 'Payment Receipt', 0, 1, 'C')
         self.ln(20)
 
+        # Add text to the top right
+        self.set_font('Arial', '', 12)
+        self.set_text_color(0, 0, 0)  # Black color
+        self.set_x(-100)  # Move to the right side
+        self.cell(0, 10, 'Group Name: YD Movie Zone', 0, 1, 'R')
+        self.cell(0, 10, 'Group Username: @YDMovieZone', 0, 1, 'R')
+        self.cell(0, 10, 'Contact us: @Mr_SpidyBot', 0, 1, 'R')
+        self.ln(10)
+
     def footer(self):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
@@ -48,7 +57,7 @@ class PDF(FPDF):
     def add_border(self):
         # Add a border around the entire page
         self.set_draw_color(0, 102, 204)  # Dark blue color for the border
-        self.set_line_width(2)  # Border thickness
+        self.set_line_width(1)  # Border thickness
         # Draw the border (x, y, width, height)
         self.rect(5, 5, self.w - 10, self.h - 10)
 
