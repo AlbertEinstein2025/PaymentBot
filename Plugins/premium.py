@@ -32,7 +32,7 @@ class PDF(FPDF):
         # Add logo
         self.image('logo.png', 10, 8, 33)
         self.set_font('Arial', 'B', 16)
-        self.set_text_color(0, 102, 204)  # Dark blue color
+        self.set_text_color(255, 0, 0)  # Red color
         self.cell(0, 10, 'Payment Receipt', 0, 1, 'C')
         self.ln(20)
 
@@ -40,7 +40,7 @@ class PDF(FPDF):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
         # Select Arial italic 8
-        self.set_font('Arial', 'I', 8)
+        self.set_font('Arial', 'B', 10)
         self.set_text_color(128, 128, 128)  # Gray color
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
