@@ -40,7 +40,7 @@ class PDF(FPDF):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
         # Select Arial italic 8
-        self.set_font('Arial', 'I', 11)
+        self.set_font('Arial', 'B', 11)
         self.set_text_color(128, 128, 128)
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
@@ -239,7 +239,6 @@ async def handle_back(client, message):
 @Bot.on_message(filters.text & filters.private & filters.incoming, group=2)
 async def handle_utr_input(client, message):
     user_id = message.from_user.id
-    username = message.from_user.first_name
     if get_state(user_id) == "processing_payment":
         utr_input = message.text
 
@@ -299,27 +298,32 @@ async def handle_utr_input(client, message):
                     current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input)
                     print(f"{user_id} ..... {time_input}")
 
-                    # Generate PDF receipt
+                    # Initialize PDF
                     pdf = PDF()
                     pdf.add_page()
 
+                    # Add border
                     pdf.add_border()
 
                     # Title Section
                     pdf.set_font('Arial', 'B', 18)
                     pdf.set_fill_color(255, 0, 0)  # Red background
                     pdf.set_text_color(255, 255, 255)  # White text
-                    pdf.cell(0, 15, 'YD Premium Subscription', 0, 1, 'C', 1)
+                    pdf.cell(0, 15, 'Payment Receipt', 0, 1, 'C', 1)
                     pdf.ln(10)
 
                     # Customer Information Section
                     pdf.add_section_box('Customer Information', (204, 204, 255))  # Light purple background
-                    pdf.cell(0, 10, f'Customer Name: {username}', ln=True)
+                    pdf.set_font('Arial', '', 12)
+                    pdf.set_text_color(0, 0, 0)  # Black text
+                    pdf.cell(0, 10, f'Customer Name: {payer}', ln=True)
                     pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
                     pdf.ln(10)
 
                     # Transaction Details Section
                     pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
+                    pdf.set_font('Arial', '', 12)
+                    pdf.set_text_color(0, 0, 0)  # Black text
                     pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
                     pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                     pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
@@ -329,6 +333,7 @@ async def handle_utr_input(client, message):
                     # Item Table
                     pdf.set_font('Arial', 'B', 12)
                     pdf.set_fill_color(255, 204, 204)  # Light red background
+                    pdf.set_text_color(0, 0, 0)  # Black text
                     pdf.cell(50, 10, 'Item', border=1, fill=True)
                     pdf.cell(50, 10, 'Validity (days)', border=1, fill=True)
                     pdf.cell(50, 10, 'Amount (INR)', border=1, fill=True, ln=True)
