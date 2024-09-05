@@ -131,7 +131,7 @@ async def start(client, message):
             pass
 
     sticker_message = await message.reply_sticker("CAACAgUAAxkBAAJxl2bS6Qmo2EHxuHwXXTaAmNBgGjtyAALOCgAC32LpVMIQfTjljS_3NQQ", reply_markup=ReplyKeyboardRemove())
-    await asyncio.sleep(2.5)
+    await asyncio.sleep(2)
     await sticker_message.delete()
     
     start_message = script.START_MESSAGE.format(user_first_name, bot_name) if user_first_name else script.START_MESSAGE2.format(bot_name)
@@ -144,7 +144,8 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")]
+                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
+                [[InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]]
             ]
         )
     )
@@ -313,7 +314,6 @@ async def handle_utr_input(client, message):
 
                     # Call give_premium to update the user's premium status
                     current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input)
-                    print(f"{user_id} ..... {time_input}")
 
                     # Initialize PDF
                     pdf = PDF()
@@ -362,7 +362,7 @@ async def handle_utr_input(client, message):
                     pdf.cell(50, 10, str(amount), border=1, fill=True, ln=True)
 
                     # Save PDF
-                    pdf_filename = f"payment_receipt_{utr}.pdf"
+                    pdf_filename = f"payment_receipt_{user_id}.pdf"
                     pdf.output(pdf_filename)
 
                     for admin_id in ADMINS:
@@ -441,7 +441,8 @@ Click below to browse our plans and unlock the premium experience! ✨</b>"""
                     InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")]
+                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
+                [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]
             ]
         )
     )
