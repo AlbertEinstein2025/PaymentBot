@@ -12,7 +12,38 @@ import translation
 import datetime
 from fpdf import FPDF
 import os
+import requests
 from pyrogram.types import ReplyKeyboardRemove
+
+def download_image(image_url, local_filename):
+    response = requests.get(image_url)
+    with open(local_filename, 'wb') as f:
+        f.write(response.content)
+
+# Define the URL and local filename
+image_url = 'https://graph.org/file/eab24027491714537168b.png'
+local_filename = 'logo.png'
+
+# Download the image
+download_image(image_url, local_filename)
+
+class PDF(FPDF):
+    def header(self):
+        # Logo
+        self.image('logo.png', 10, 8, 33)
+        self.set_font('Arial', 'B', 12)
+        self.cell(80)
+        # Title
+        self.cell(30, 10, 'Payment Receipt', 0, 1, 'C')
+        self.ln(20)
+
+    def footer(self):
+        # Go to 1.5 cm from bottom
+        self.set_y(-15)
+        # Select Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        # Footer message
+        self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
 
 @Bot.on_message(filters.command("export") & filters.chat(OWNER_ID))
 async def handle_export_payments(client, message):
@@ -255,8 +286,8 @@ async def handle_utr_input(client, message):
                     print(f"{user_id} ..... {time_input}")
 
                     # Generate PDF receipt
+                    pdf = PDF()
                     pdf_filename = f"payment_receipt_{utr}.pdf"
-                    pdf = FPDF()
                     pdf.add_page()
 
                     # Title Section
