@@ -45,6 +45,13 @@ class PDF(FPDF):
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
 
+    def add_border(self):
+        # Add a border around the entire page
+        self.set_draw_color(0, 0, 0)  # Black color for the border
+        self.set_line_width(1)  # Border thickness
+        # Draw the border (x, y, width, height)
+        self.rect(10, 10, self.w - 20, self.h - 20)
+
 @Bot.on_message(filters.command("export") & filters.chat(OWNER_ID))
 async def handle_export_payments(client, message):
     all_payments = used_utrs.find()
