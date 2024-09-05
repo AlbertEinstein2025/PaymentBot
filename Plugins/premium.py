@@ -201,7 +201,6 @@ async def handle_confirm_payment(client, message):
 @Bot.on_message(filters.regex("❌ Cancel") & filters.private & filters.incoming, group=3)
 async def handle_cancel(client, message):
     user_id = message.from_user.id
-    username = message.from_user.first_name
     if get_state(user_id) == "processing_payment":
         reset_state(user_id)
         await message.reply_text("<b>Verification cancelled.</b>", reply_markup=ReplyKeyboardRemove())
@@ -225,7 +224,7 @@ async def handle_back(client, message):
 @Bot.on_message(filters.text & filters.private & filters.incoming, group=2)
 async def handle_utr_input(client, message):
     user_id = message.from_user.id
-    
+    username = message.from_user.first_name
     if get_state(user_id) == "processing_payment":
         utr_input = message.text
 
