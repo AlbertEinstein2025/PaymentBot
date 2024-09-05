@@ -21,7 +21,7 @@ def download_image(image_url, local_filename):
         f.write(response.content)
 
 # Define the URL and local filename
-image_url = 'https://graph.org/file/eab24027491714537168b.png'
+image_url = 'https://graph.org/file/1b25775c841e6a3bffa1c.png'
 local_filename = 'logo.png'
 
 # Download the image
@@ -29,12 +29,11 @@ download_image(image_url, local_filename)
 
 class PDF(FPDF):
     def header(self):
-        # Logo
+        # Add logo
         self.image('logo.png', 10, 8, 33)
-        self.set_font('Arial', 'B', 12)
-        self.cell(80)
-        # Title
-        self.cell(30, 10, 'Payment Receipt', 0, 1, 'C')
+        self.set_font('Arial', 'B', 16)
+        self.set_text_color(0, 102, 204)  # Dark blue color
+        self.cell(0, 10, 'Payment Receipt', 0, 1, 'C')
         self.ln(20)
 
     def footer(self):
@@ -42,6 +41,7 @@ class PDF(FPDF):
         self.set_y(-15)
         # Select Arial italic 8
         self.set_font('Arial', 'I', 8)
+        self.set_text_color(128, 128, 128)  # Gray color
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
 
@@ -291,38 +291,44 @@ async def handle_utr_input(client, message):
                     pdf.add_page()
 
                     # Title Section
-                    pdf.set_font('Arial', 'B', 12)
-                    pdf.cell(200, 10, 'Payment Receipt', ln=True, align='C')
+                    pdf.set_font('Arial', 'B', 14)
+                    pdf.set_fill_color(0, 153, 255)  # Light blue background
+                    pdf.cell(0, 10, 'Payment Receipt', 0, 1, 'C', 1)
+                    pdf.ln(10)
 
                     # Customer Information Section
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.set_fill_color(204, 204, 255)  # Light purple background
+                    pdf.cell(0, 10, 'Customer Information', 0, 1, 'L', 1)
+                    pdf.set_font('Arial', '', 12)
+                    pdf.set_fill_color(255, 255, 255)  # White background for text
+                    pdf.cell(0, 10, f'Customer Name: {payer}', ln=True)
+                    pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
                     pdf.ln(10)
-                    pdf.set_font('Arial', 'B', 10)
-                    pdf.cell(100, 10, 'Customer Information', ln=True)
-                    pdf.set_font('Arial', '', 10)
-                    pdf.cell(100, 10, f'Customer Name: {payer}', ln=True)
-                    pdf.cell(100, 10, f'Telegram ID: {user_id}', ln=True)
 
                     # Transaction Details Section
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.set_fill_color(204, 255, 204)  # Light green background
+                    pdf.cell(0, 10, 'Transaction Details', 0, 1, 'L', 1)
+                    pdf.set_font('Arial', '', 12)
+                    pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
+                    pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
+                    pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
+                    pdf.cell(0, 10, f'Paid by App: {app}', ln=True)
                     pdf.ln(10)
-                    pdf.set_font('Arial', 'B', 10)
-                    pdf.cell(100, 10, 'Transaction Details', ln=True)
-                    pdf.set_font('Arial', '', 10)
-                    pdf.cell(100, 10, f'Payment Amount: {amount}', ln=True)
-                    pdf.cell(100, 10, f'Transaction ID: {utr}', ln=True)
-                    pdf.cell(100, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
-                    pdf.cell(100, 10, f'Paid by App: {app}', ln=True)
 
                     # Item Table
-                    pdf.ln(10)
-                    pdf.set_font('Arial', 'B', 10)
-                    pdf.cell(50, 10, 'Item', border=1)
-                    pdf.cell(50, 10, 'Validity (days)', border=1)
-                    pdf.cell(50, 10, 'Amount (INR)', border=1, ln=True)
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.set_fill_color(255, 204, 204)  # Light red background
+                    pdf.cell(50, 10, 'Item', border=1, fill=True)
+                    pdf.cell(50, 10, 'Validity (days)', border=1, fill=True)
+                    pdf.cell(50, 10, 'Amount (INR)', border=1, fill=True, ln=True)
 
-                    pdf.set_font('Arial', '', 10)
-                    pdf.cell(50, 10, "Premium Subscription", border=1)
-                    pdf.cell(50, 10, time_input, border=1)
-                    pdf.cell(50, 10, str(amount), border=1, ln=True)
+                    pdf.set_font('Arial', '', 12)
+                    pdf.set_fill_color(255, 255, 255)  # White background for table cells
+                    pdf.cell(50, 10, "Premium Subscription", border=1, fill=True)
+                    pdf.cell(50, 10, time_input, border=1, fill=True)
+                    pdf.cell(50, 10, str(amount), border=1, fill=True, ln=True)
 
                     # Save PDF
                     pdf.output(pdf_filename)
