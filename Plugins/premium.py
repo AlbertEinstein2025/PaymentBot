@@ -215,15 +215,16 @@ async def handle_utr_input(client, message):
 
         await message.delete()
         
-        if await is_utr_used(utr):
-           await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
-           return
+        # if await is_utr_used(utr):
+        #    await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
+        #    return
         verification_result = verify_payment(utr)
 
         if verification_result:
             amount = verification_result['amount']
             status = verification_result['status']
             payer = verification_result['payer']
+            app = verification_result['app']
 
             if status == "SUCCESS":
                 plan_messages = {
@@ -262,9 +263,9 @@ async def handle_utr_input(client, message):
 
                     expiry_time = new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')
                     if current_time_ist and new_expiry_time_ist:
-                        VERIFY_Text = script.PAYMENT_VERIFIED.format(amount, payer, success_message, expiry_time)
+                        VERIFY_Text = script.PAYMENT_VERIFIED.format(amount, payer, app, success_message, expiry_time)
                     else:
-                        VERIFY_Text = script.PAYMENT_VERIFIED2.format(amount, payer, success_message)
+                        VERIFY_Text = script.PAYMENT_VERIFIED2.format(amount, payer, app, success_message)
 
                     await verifying_message.edit_text(VERIFY_Text)
                     user = await client.get_users(user_id)

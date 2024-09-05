@@ -64,7 +64,8 @@ Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 <b>🎉 Payment Verified! 🎉
 
 <blockquote>Amount Received: ₹{}
-Payer: {}</blockquote>
+Payer Name: {}</blockquote>
+Pay Via App: {}
 
 <blockquote>{}
 
@@ -76,7 +77,8 @@ To Check Your Plan: Go to Both Bot and send /myplan for getting subscription inf
 <b>🎉 Payment Verified! 🎉
 
 Amount Received: ₹{}
-Payer: {}
+Payer Name: {}
+Pay Via App: {}
 
 {}
 
