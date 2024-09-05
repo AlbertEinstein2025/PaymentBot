@@ -40,7 +40,7 @@ class PDF(FPDF):
         # Go to 1.5 cm from bottom
         self.set_y(-15)
         # Select Arial italic 8
-        self.set_font('Arial', 'I', 8)
+        self.set_font('Arial', 'I', 11)
         self.set_text_color(128, 128, 128)  # Gray color
         # Footer message
         self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
@@ -201,7 +201,7 @@ async def handle_confirm_payment(client, message):
 @Bot.on_message(filters.regex("❌ Cancel") & filters.private & filters.incoming, group=3)
 async def handle_cancel(client, message):
     user_id = message.from_user.id
-
+    username = message.from_user.first_name
     if get_state(user_id) == "processing_payment":
         reset_state(user_id)
         await message.reply_text("<b>Verification cancelled.</b>", reply_markup=ReplyKeyboardRemove())
@@ -293,7 +293,7 @@ async def handle_utr_input(client, message):
                     # Title Section
                     pdf.set_font('Arial', 'B', 14)
                     pdf.set_fill_color(0, 153, 255)  # Light blue background
-                    pdf.cell(0, 10, 'Payment Receipt', 0, 1, 'C', 1)
+                    pdf.cell(0, 10, 'YD Premium Subscription', 0, 1, 'C', 1)
                     pdf.ln(10)
 
                     # Customer Information Section
@@ -302,7 +302,7 @@ async def handle_utr_input(client, message):
                     pdf.cell(0, 10, 'Customer Information', 0, 1, 'L', 1)
                     pdf.set_font('Arial', '', 12)
                     pdf.set_fill_color(255, 255, 255)  # White background for text
-                    pdf.cell(0, 10, f'Customer Name: {payer}', ln=True)
+                    pdf.cell(0, 10, f'Customer Name: {username}', ln=True)
                     pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
                     pdf.ln(10)
 
@@ -311,6 +311,7 @@ async def handle_utr_input(client, message):
                     pdf.set_fill_color(204, 255, 204)  # Light green background
                     pdf.cell(0, 10, 'Transaction Details', 0, 1, 'L', 1)
                     pdf.set_font('Arial', '', 12)
+                    pdf.cell(0, 10, f'Payer Name: {payer}', ln=True)
                     pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
                     pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                     pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
