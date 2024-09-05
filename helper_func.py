@@ -87,7 +87,11 @@ def verify_payment(utr):
         response = requests.get(url)
         response.raise_for_status()
 
+        # Parse JSON response
         data = json.loads(response.text)
+        
+        # Print the entire JSON response for debugging
+        print("Response data:", data)
 
         # Return a dictionary with the amount and status
         return {
@@ -97,6 +101,9 @@ def verify_payment(utr):
         }
     except requests.exceptions.RequestException as e:
         print(f"Error verifying payment: {e}")
+        return None
+    except json.JSONDecodeError:
+        print("Error decoding JSON response.")
         return None
 
 CURRENT_STATE = {}
