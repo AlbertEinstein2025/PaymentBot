@@ -10,6 +10,8 @@ import pandas as pd
 import openpyxl
 import translation
 import datetime
+from fpdf import FPDF
+import os
 from pyrogram.types import ReplyKeyboardRemove
 
 @Bot.on_message(filters.command("export") & filters.chat(OWNER_ID))
@@ -215,9 +217,9 @@ async def handle_utr_input(client, message):
 
         await message.delete()
         
-        if await is_utr_used(utr):
-           await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
-           return
+        # if await is_utr_used(utr):
+        #    await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
+        #    return
         verification_result = verify_payment(utr)
 
         if verification_result:
@@ -252,6 +254,48 @@ async def handle_utr_input(client, message):
                     current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input)
                     print(f"{user_id} ..... {time_input}")
 
+                    # Generate PDF receipt
+                    pdf_filename = f"payment_receipt_{utr}.pdf"
+                    pdf = FPDF()
+                    pdf.add_page()
+
+                    # Title Section
+                    pdf.set_font('Arial', 'B', 12)
+                    pdf.cell(200, 10, 'Payment Receipt', ln=True, align='C')
+
+                    # Customer Information Section
+                    pdf.ln(10)
+                    pdf.set_font('Arial', 'B', 10)
+                    pdf.cell(100, 10, 'Customer Information', ln=True)
+                    pdf.set_font('Arial', '', 10)
+                    pdf.cell(100, 10, f'Customer Name: {payer}', ln=True)
+                    pdf.cell(100, 10, f'Telegram ID: {user_id}', ln=True)
+
+                    # Transaction Details Section
+                    pdf.ln(10)
+                    pdf.set_font('Arial', 'B', 10)
+                    pdf.cell(100, 10, 'Transaction Details', ln=True)
+                    pdf.set_font('Arial', '', 10)
+                    pdf.cell(100, 10, f'Payment Amount: ₹{amount}', ln=True)
+                    pdf.cell(100, 10, f'Transaction ID: {utr}', ln=True)
+                    pdf.cell(100, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
+                    pdf.cell(100, 10, f'Paid by App: {app}', ln=True)
+
+                    # Item Table
+                    pdf.ln(10)
+                    pdf.set_font('Arial', 'B', 10)
+                    pdf.cell(50, 10, 'Item', border=1)
+                    pdf.cell(50, 10, 'Validity (days)', border=1)
+                    pdf.cell(50, 10, 'Amount (INR)', border=1, ln=True)
+
+                    pdf.set_font('Arial', '', 10)
+                    pdf.cell(50, 10, "Premium Subscription", border=1)
+                    pdf.cell(50, 10, time_input, border=1)
+                    pdf.cell(50, 10, str(amount), border=1, ln=True)
+
+                    # Save PDF
+                    pdf.output(pdf_filename)
+
                     for admin_id in ADMINS:
                         try:
                             await client.send_message(
@@ -284,7 +328,16 @@ async def handle_utr_input(client, message):
                             f"⌛️ New Expiry Date: {new_expiry_time_ist.strftime('%d-%m-%Y')}\n"
                             f"⏱️ New Expiry Time: {new_expiry_time_ist.strftime('%I:%M:%S %p')}\n", disable_web_page_preview=True
                     )
-                    await message.reply_text("<b>Thank you so much for subscribe to Premium 💖</b>", reply_markup=ReplyKeyboardRemove())
+                    
+                    # Step 4: Send PDF receipt to the user
+                    with open(pdf_filename, 'rb') as pdf_file:
+                        await client.send_document(user_id, pdf_file, caption="Here is your payment receipt.")
+                    
+                    # Clean up
+                    if os.path.exists(pdf_filename):
+                        os.remove(pdf_filename)
+
+                    await message.reply_text("<b>Thank you so much for subscribing to Premium 💖</b>", reply_markup=ReplyKeyboardRemove())
                 else:
                     await verifying_message.edit_text(f"<b>Incorrect payment amount.\n\n<blockquote>Amount : {amount}</blockquote>\n\n<blockquote>Payer Name : {payer}</blockquote>.\n\nPlease check the plan and contact Admin @Mr_SpidyBot.</b>")
             elif status == "FAILED":
