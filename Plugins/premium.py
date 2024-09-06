@@ -258,7 +258,6 @@ async def handle_utr_input(client, message):
                 [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
             ]
         )
-    )
         await message.delete()
         
         if await is_utr_used(utr):
