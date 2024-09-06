@@ -129,10 +129,6 @@ async def start(client, message):
             await add_user(id)
         except:
             pass
-
-    sticker_message = await message.reply_sticker("CAACAgUAAxkBAAJxl2bS6Qmo2EHxuHwXXTaAmNBgGjtyAALOCgAC32LpVMIQfTjljS_3NQQ", reply_markup=ReplyKeyboardRemove())
-    await asyncio.sleep(2)
-    await sticker_message.delete()
     
     start_message = script.START_MESSAGE.format(user_first_name, bot_name) if user_first_name else script.START_MESSAGE2.format(bot_name)
 
@@ -144,8 +140,8 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
-                [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]
+                    [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
+                    [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]
             ]
         )
     )
@@ -279,9 +275,9 @@ async def handle_utr_input(client, message):
 
         await message.delete()
         
-        # if await is_utr_used(utr):
-        #    await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
-        #    return
+        if await is_utr_used(utr):
+           await verifying_message.edit_text("<b>This UTR has already been used. Please provide a different UTR.</b>", reply_markup=back_keyboard)
+           return
         verification_result = verify_payment(utr)
 
         if verification_result:
