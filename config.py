@@ -4,6 +4,10 @@ API_ID = 25412293
 
 BOT_TOKEN = "7281069995:AAH6WTlC1uIX6xP_Qn_S-gVJkiM3YZyE_Z0"
 
+QR_CODE = "https://te.legra.ph/file/c752fe552eba09dd31cb0.jpg" 
+
+PDF_LOGO = 'https://graph.org/file/1b25775c841e6a3bffa1c.png'
+
 try:
     ADMINS=[]
     for x in ("2006425984 1053777957".split()): 
