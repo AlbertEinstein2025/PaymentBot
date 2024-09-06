@@ -184,12 +184,11 @@ async def premium_plans_callback(client, query):
 @Bot.on_callback_query(filters.regex(r'^buy_premium$'))
 async def buy_premium(client, query):
     qr_code_url = "https://te.legra.ph/file/c752fe552eba09dd31cb0.jpg" 
-    confirm_payment_keyboard = ReplyKeyboardMarkup(
+    confirm_payment_keyboard = InlineKeyboardMarkup(
         [
-            [KeyboardButton("🧾 Confirm Payment")],
-            [KeyboardButton("🔙 Back")]
-        ],
-        resize_keyboard=True
+            [InlineKeyboardButton("🧾 Confirm Payment", callback_data="confirm_payment")],
+            [InlineKeyboardButton("🔙 Back", callback_data="go_back")]
+        ]
     )
 
     await client.send_photo(
@@ -200,16 +199,15 @@ async def buy_premium(client, query):
     )
     set_state(query.from_user.id, "waiting_for_utr")
 
-@Bot.on_message(filters.regex("🧾 Confirm Payment") & filters.private & filters.incoming, group=2)
-async def handle_confirm_payment(client, message):
-    user_id = message.from_user.id
+@Bot.on_callback_query(filters.regex(r'^confirm_payment$'))
+async def handle_confirm_payment(client, query):
+    user_id = query.from_user.id
     
     if get_state(user_id) == "waiting_for_utr":
-        cancel_keyboard = ReplyKeyboardMarkup(
+        cancel_keyboard = InlineKeyboardMarkup(
             [
-                [KeyboardButton("❌ Cancel")]
-            ],
-            resize_keyboard=True
+                [InlineKeyboardButton("❌ Cancel", callback_data="cancel_payment")]
+            ]
         )
         retry_btn = InlineKeyboardMarkup(
             [
@@ -217,38 +215,36 @@ async def handle_confirm_payment(client, message):
             ]
         )
 
-        await message.reply_text("<b>Please enter 12 Digit UTR number or click 'Cancel' to go back:</b>", reply_markup=cancel_keyboard)
+        await query.message.reply_text("<b>Please enter 12 Digit UTR number or click 'Cancel' to go back:</b>", reply_markup=cancel_keyboard)
 
         set_state(user_id, "processing_payment")
         await asyncio.sleep(200)
 
         if get_state(user_id) == "processing_payment":
             reset_state(user_id)
-            await message.reply_text("<b>Times up! please try again 😮‍💨</b>", reply_markup=ReplyKeyboardRemove())
-            await message.reply_text("<b>Don't worry, no need to pay again. Just click on Try Again Button and send your UTR number again to verify the payment.</b>", reply_markup=retry_btn)
+            await query.message.reply_text("<b>Times up! please try again 😮‍💨</b>", reply_markup=ReplyKeyboardRemove())
+            await query.message.reply_text("<b>Don't worry, no need to pay again. Just click on Try Again Button and send your UTR number again to verify the payment.</b>", reply_markup=retry_btn)
 
-@Bot.on_message(filters.regex("❌ Cancel") & filters.private & filters.incoming, group=3)
-async def handle_cancel(client, message):
-    user_id = message.from_user.id
+@Bot.on_callback_query(filters.regex(r'^cancel_payment$'))
+async def handle_cancel(client, query):
+    user_id = query.from_user.id
     if get_state(user_id) == "processing_payment":
         reset_state(user_id)
-        await message.reply_text("<b>Verification cancelled.</b>", reply_markup=ReplyKeyboardRemove())
-        await start(client, message)
+        await query.message.reply_text("<b>Verification cancelled.</b>", reply_markup=ReplyKeyboardRemove())
+        await start(client, query.message)
 
-@Bot.on_message(filters.regex("🔙 Back") & filters.private & filters.incoming, group=2)
-async def handle_back(client, message):
-    user_id = message.from_user.id
+@Bot.on_callback_query(filters.regex(r'^go_back$'))
+async def handle_back(client, query):
+    user_id = query.from_user.id
 
     if get_state(user_id):
         reset_state(user_id)
 
-    await start(client, message) 
-    # message = await message.reply_text("<b>Back</b>", reply_markup=ReplyKeyboardRemove())
-    await asyncio.sleep(1)
+    await start(client, query.message)
     try:
-        await message.delete()
+        await query.message.delete()
     except Exception as e:
-        print(f"Error deleting message: {e}") 
+        print(f"Error deleting message: {e}")
 
 @Bot.on_message(filters.text & filters.private & filters.incoming, group=2)
 async def handle_utr_input(client, message):
