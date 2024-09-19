@@ -202,7 +202,7 @@ async def handle_confirm_payment(client, query):
     if get_state(user_id) == "waiting_for_utr":
         retry_btn = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("Try Again ♻️", callback_data="buy_premium")]
+                [InlineKeyboardButton("Try Again ♻️", callback_data="confirm_payment")]
             ]
         )
 
@@ -346,15 +346,6 @@ async def handle_utr_input(client, message):
                     pdf_filename = f"payment_receipt_{user_id}.pdf"
                     pdf.output(pdf_filename)
 
-                    for admin_id in ADMINS:
-                        try:
-                            await client.send_message(
-                                chat_id=admin_id,
-                                text=f"<b>New premium user!\n\nUser ID: {user_id}\nPlan: {success_message}\n\n Player Name: {payer}\n\n Amount : ₹{amount}</b>"
-                            )
-                        except Exception as e:
-                            print(f"Error sending notification to admin {admin_id}: {e}")
-
                     expiry_time = new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')
                     if current_time_ist and new_expiry_time_ist:
                         VERIFY_Text = script.PAYMENT_VERIFIED.format(amount, payer, app, success_message, expiry_time)
@@ -366,6 +357,15 @@ async def handle_utr_input(client, message):
                     username = user.username
                     subscription_type = "YD Premium Plans"
                     user_mention = user.mention
+
+                    for admin_id in ADMINS:
+                        try:
+                            await client.send_message(
+                                chat_id=admin_id,
+                                text=f"<b><u>New premium user!</u>\n\nUser: {user_mention}\nUser ID: <a href='tg://openmessage?user_id={user_id}'>{user_id}</a>\n Player Name: {payer}\nAmount : ₹{amount}\n\nPlan: {success_message}</b>"
+                            )
+                        except Exception as e:
+                            print(f"Error sending notification to admin {admin_id}: {e}")
                     
                     await add_used_utr(subscription_type, payer, username, user_id, utr, amount)
                     await client.send_message(LOG_CHANNEL_ID, 
