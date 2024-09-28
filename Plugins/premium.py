@@ -175,6 +175,7 @@ async def premium_plans_callback(client, query):
         reply_markup=InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")],  # New callback for premium purchase
+                [InlineKeyboardButton("Test", callback_data="choose_sub")],
                 [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
             ]
         )
