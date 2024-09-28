@@ -45,39 +45,50 @@ async def get_seconds(time_string):
     else:
         return 0
 
-async def give_premium(user_id, time_input):
+async def give_premium(user_id, time_input, subscription_type='sub1'):
     seconds_to_add = await get_seconds(time_input)
 
     if seconds_to_add > 0:
         current_time = datetime.utcnow()
 
-        # Get the user's current expiry time from the database
-        user_data, user_data2 = await db.get_user(user_id)  # Unpack the tuple
-
-        # Choose which user_data to use based on your logic
-        # For example, prioritize the first database if data exists there
-        relevant_user_data = user_data or user_data2  
+        # Fetch user data depending on subscription type
+        if subscription_type == 'sub1':
+            try:
+                user_data1, user_data2 = await db.get_user(user_id)  # Unpack the tuple
+                relevant_user_data = user_data1 or user_data2  # Prioritize first DB if data exists
+            except Exception as e:
+                print(f"Error fetching user data for Sub1: {e}")
+                return None, None
+        elif subscription_type == 'sub2':
+            try:
+                user_data3 = await db.get_user3(user_id)  # Assuming you fetch user_data3 from another function
+                relevant_user_data = user_data3
+            except Exception as e:
+                print(f"Error fetching user data for Sub2: {e}")
+                return None, None
 
         current_expiry_time = relevant_user_data.get("expiry_time") if relevant_user_data else None
 
         if current_expiry_time and current_expiry_time > current_time:
-            # User has remaining premium time, so add to the remaining time
             new_expiry_time = current_expiry_time + timedelta(seconds=seconds_to_add)
         else:
-            # No remaining premium time, so set expiry to now + new duration
             new_expiry_time = current_time + timedelta(seconds=seconds_to_add)
 
-        # Update the expiry time in the database
+        # Update expiry time in the respective DB based on subscription
         user_data = {"id": user_id, "expiry_time": new_expiry_time}
-        await db.update_user(user_data)
+        if subscription_type == 'sub1':
+            await db.update_user(user_data)
+        elif subscription_type == 'sub2':
+            await db.update_user3(user_data)  # Assuming another function for updating
 
+        # Convert timezones
         ist = pytz.timezone('Asia/Kolkata')
         current_time_ist = current_time.astimezone(ist)
         new_expiry_time_ist = new_expiry_time.astimezone(ist)
 
-        return current_time_ist, new_expiry_time_ist  # Return the times for later use
+        return current_time_ist, new_expiry_time_ist
     else:
-        return None, None  # Return None if invalid time format
+        return None, None
 
 def verify_payment(utr):
 

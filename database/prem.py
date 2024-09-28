@@ -10,6 +10,9 @@ mydb = client[DATABASE_NAME]
 client2 = AsyncIOMotorClient(SECONDDB_URI)
 mydb2 = client2[DATABASE_NAME]
 
+client3 = AsyncIOMotorClient(PUBLIC_URI)
+mydb3 = client3[DATABASE_NAME]
+
 #direct importing from utils causing loop, directly added here so no error should come.
 def extract_value_and_unit(ts):
         value = ""
@@ -54,6 +57,9 @@ class Database:
         self.col2 = mydb2.users
         self.users2 = mydb2.uersz
 
+        self.col3 = mydb3.users
+        self.users3 = mydb3.uersz
+
     def new_user(self, id, name):
         return dict(
             id = id,
@@ -67,10 +73,17 @@ class Database:
         user_data = await self.users.find_one({"id": user_id})
         user_data2 = await self.users2.find_one({"id": user_id})
         return user_data, user_data2
+
+    async def get_user3(self, user_id):
+        user_data3 = await self.users3.find_one({"id": user_id})
+        return user_data3
         
     async def update_user(self, user_data):
         await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
         await self.users2.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
+    
+    async def update_user3(self, user_data):
+        await self.users3.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
         user_data = await self.get_user(user_id)
@@ -83,6 +96,18 @@ class Database:
             else:
                 await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
                 await self.users2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+        return False
+
+    async def has_premium_access3(self, user_id):
+        user_data = await self.get_user(user_id)
+        if user_data3:
+            expiry_time = user_data.get("expiry_time")
+            if expiry_time is None:
+                return False
+            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                return True
+            else:
+                await self.users3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
         return False
 
 

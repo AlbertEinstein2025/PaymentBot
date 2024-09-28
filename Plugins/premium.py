@@ -7,7 +7,7 @@ from helper_func import *
 from database.database import *
 from Script import script
 import pandas as pd
-from config import QR_CODE, PDF_LOGO
+from config import QR_CODE, PDF_LOGO, PDF_LOGO
 import openpyxl
 import translation
 import datetime
@@ -167,6 +167,7 @@ async def about_callback(client, query):
         ),
         disable_web_page_preview=True
     )
+
 @Bot.on_callback_query(filters.regex(r'^premium_plans$'))
 async def premium_plans_callback(client, query):
     await query.message.edit(
@@ -178,6 +179,38 @@ async def premium_plans_callback(client, query):
             ]
         )
     )
+
+# Handling subscription choices via callback
+@Bot.on_callback_query(filters.regex(r'^choose_sub$'))
+async def buy_premium(client, query):
+    confirm_payment_keyboard = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Sub1", callback_data="choose_sub1")],
+            [InlineKeyboardButton("Sub2", callback_data="choose_sub2")],
+        ]
+    )
+
+    await client.send_photo(
+        query.message.chat.id,
+        photo=PDF_LOGO,
+        caption=script.CHOOSE_SUB.format(query.from_user.mention),
+        reply_markup=confirm_payment_keyboard
+    )
+
+# Sub1 chosen
+@Bot.on_callback_query(filters.regex(r'^choose_sub1$'))
+async def confirm_sub1(client, query):
+    user_id = query.from_user.id
+    current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input=time_input, subscription_type='sub1')
+    await query.answer("Sub1 chosen! Premium activated.")
+
+# Sub2 chosen
+@Bot.on_callback_query(filters.regex(r'^choose_sub2$'))
+async def confirm_sub2(client, query):
+    user_id = query.from_user.id
+    current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input=time_input, subscription_type='sub2')
+    await query.answer("Sub2 chosen! Premium activated.")
+
 
 @Bot.on_callback_query(filters.regex(r'^buy_premium$'))
 async def buy_premium(client, query):
@@ -289,12 +322,23 @@ async def handle_utr_input(client, message):
                     360: "1year"
                 }
 
-                if amount in plan_messages:
+                if get_state(user_id) == "sub1":
                     time_input = plan_time_inputs[amount]
+                    subscription_type = "Sub1"  # Set subscription type for Sub1
+                elif get_state(user_id) == "sub2":
+                    time_input = plan_time_inputs[amount]
+                    subscription_type = "Sub2"  # Set subscription type for Sub2
+
+                if amount in plan_messages:
                     success_message = plan_messages[amount]
 
-                    # Call give_premium to update the user's premium status
-                    current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input)
+                    # Call give_premium to update the user's premium status and pass the subscription type
+                    current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input, subscription_type)
+
+                    # Notify the user about the successful payment and subscription
+                    expiry_time = new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')
+                    VERIFY_Text = f"Amount: {amount}\nPayer: {payer}\nApp: {app}\n\n{success_message}\nExpiry Date: {expiry_time}\nSubscription Type: {subscription_type}"
+                    await verifying_message.edit_text(VERIFY_Text)
 
                     # Initialize PDF
                     pdf = PDF()

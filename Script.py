@@ -60,6 +60,8 @@ Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 🆔 UPI ID: 
 `bharatpe.8p0y0j5O2k82600@fbpe` (Tap to copy)</b>"""
 
+    CHOOSE_SUB ="""Choose any"""
+
     PAYMENT_VERIFIED = """
 <b>🎉 Payment Verified! 🎉
 
