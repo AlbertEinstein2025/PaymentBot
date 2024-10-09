@@ -1,3 +1,5 @@
+import os
+
 API_HASH = "d58456be9931f3f6b8154a626fc1b3c6"
 
 API_ID = 25412293
@@ -27,5 +29,7 @@ SECONDDB_URI = "mongodb+srv://spidy:MongoDB1432@cluster1.ssqidl2.mongodb.net/?re
 DATABASE_URI = "mongodb+srv://Spidy:MongoDB1432@autofilter.zqu7rr3.mongodb.net/?retryWrites=true&w=majority"
 DATABASE_NAME = "YourDemandZone"
 COLLECTION_NAME = 'YourDemandZone'
+PORT = os.environ.get('PORT', '8080')
+
 
 tempDict = {'indexDB': DATABASE_URI}
