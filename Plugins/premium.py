@@ -135,7 +135,7 @@ async def start(client, message):
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
+                    InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/52'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
                     [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
@@ -419,7 +419,7 @@ Click below to browse our plans and unlock the premium experience! ✨</b>"""
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/'),
+                    InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/52'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
                 [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
