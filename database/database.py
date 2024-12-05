@@ -32,15 +32,24 @@ async def add_used_utr(subscription_type, payer, username, user_id, utr, amount)
     })
 
 async def remove_used_utr(utr):
-    """Remove a used UTR from the database."""
+    """
+    Remove a UTR from the database.
+    """
+    utr = utr.strip()  # Normalize input to avoid issues
     result = used_utrs.delete_one({'UTR Number': utr})
+    
     if result.deleted_count > 0:
-        print(f"UTR {utr} successfully removed from the database.")
+        print(f"DEBUG: UTR {utr} successfully removed from the database.")
         return True
     else:
-        print(f"UTR {utr} not found in the database.")
+        # Log a diagnostic query
+        existing_utrs = used_utrs.find_one({'UTR Number': {'$regex': utr, '$options': 'i'}})
+        if existing_utrs:
+            print(f"DEBUG: Found UTR {utr} in a different format: {existing_utrs}")
+        else:
+            print(f"DEBUG: UTR {utr} not found for deletion.")
         return False
-        
+
 async def present_user(user_id : int):
     found = user_data.find_one({'_id': user_id})
     return bool(found)
