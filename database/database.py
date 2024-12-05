@@ -32,22 +32,25 @@ async def add_used_utr(subscription_type, payer, username, user_id, utr, amount)
     })
 
 async def remove_used_utr(utr):
-    """
-    Remove a UTR from the database.
-    """
-    utr = utr.strip()  # Normalize input to avoid issues
+ 
+    try:
+        utr = int(utr)  # Convert the UTR to an integer for proper comparison
+    except ValueError:
+        print(f"DEBUG: Invalid UTR format: {utr}. It should be a digit.")
+        return False
+
     result = used_utrs.delete_one({'UTR Number': utr})
     
     if result.deleted_count > 0:
         print(f"DEBUG: UTR {utr} successfully removed from the database.")
         return True
     else:
-        # Log a diagnostic query
-        existing_utrs = used_utrs.find_one({'UTR Number': {'$regex': utr, '$options': 'i'}})
+        # If no deletion occurred, check if the UTR exists in the database
+        existing_utrs = await used_utrs.find_one({'UTR Number': utr})
         if existing_utrs:
-            print(f"DEBUG: Found UTR {utr} in a different format: {existing_utrs}")
+            print(f"DEBUG: Found UTR {utr} in the database: {existing_utrs}")
         else:
-            print(f"DEBUG: UTR {utr} not found for deletion.")
+            print(f"DEBUG: UTR {utr} not found for deletion.")  # This is the message you wanted
         return False
 
 async def present_user(user_id : int):

@@ -52,11 +52,11 @@ async def give_premium(user_id, time_input):
         current_time = datetime.utcnow()
 
         # Get the user's current expiry time from the database
-        user_data, user_data2 = await db.get_user(user_id)  # Unpack the tuple
+        user_data, user_data2, user_data3 = await db.get_user(user_id)  # Unpack the tuple
 
         # Choose which user_data to use based on your logic
         # For example, prioritize the first database if data exists there
-        relevant_user_data = user_data or user_data2  
+        relevant_user_data = user_data or user_data2  or user_data3
 
         current_expiry_time = relevant_user_data.get("expiry_time") if relevant_user_data else None
 
