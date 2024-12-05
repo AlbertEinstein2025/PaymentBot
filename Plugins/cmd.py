@@ -3,6 +3,7 @@ from pyrogram import Client, filters
 from bot import Bot
 from helper_func import give_premium
 import pytz
+from database.database import *
 
 
 @Bot.on_message(filters.command("addpremium") & filters.user(ADMINS))
@@ -35,3 +36,35 @@ async def addpremium_cmd_handler(client: Client, message):
             await message.reply_text("**Invalid time format. Please use '1day', '1hour', '1min', '1month', or '1year'**")
     else:
         await message.reply_text("**Usage: /addpremium user_id time**")
+
+@Bot.on_message(filters.command("removeutr") & filters.user(ADMINS))
+async def handle_remove_utr_command(client, message):
+    """
+    Handles the /removeutr <utr> command to remove a UTR from the database.
+    Only accessible to users listed in ADMINS.
+    """
+    try:
+        # Extract the UTR number from the message
+        command_parts = message.text.strip().split(maxsplit=1)
+        if len(command_parts) != 2:
+            await message.reply("⚠️ **Usage:** /removeutr <UTR>")
+            return
+        
+        utr = command_parts[1].strip()
+        
+        if not utr:
+            await message.reply("⚠️ **Error:** UTR cannot be empty. Please provide a valid UTR.")
+            return
+        
+        # Call the function to remove the UTR
+        success = await remove_used_utr(utr)
+        
+        # Send appropriate response
+        if success:
+            await message.reply(f"✅ **UTR** `{utr}` has been successfully removed from the database.")
+        else:
+            await message.reply(f"⚠️ **UTR** `{utr}` not found in the database.")
+    except Exception as e:
+        # Log the exception (if you have a logging system in place)
+        print(f"Error in /removeutr command: {e}")
+        await message.reply(f"❌ **An error occurred:** {e}")
