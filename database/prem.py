@@ -81,23 +81,23 @@ class Database:
         await self.users3.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
-    """
-    Check if the user has premium access across all databases.
-    """
-    user_data_list = await self.get_user(user_id)
-    
-    for user_data in user_data_list:
-        if user_data:
-            expiry_time = user_data.get("expiry_time")
-            if expiry_time:
-                if isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
-                    return True
-                else:
-                    # Expiry time exists but has passed; reset it
-                    await self.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                    await self.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                    await self.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-    return False
+        """
+        Check if the user has premium access across all databases.
+        """
+        user_data_list = await self.get_user(user_id)
+        
+        for user_data in user_data_list:
+            if user_data:
+                expiry_time = user_data.get("expiry_time")
+                if expiry_time:
+                    if isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                        return True
+                    else:
+                        # Expiry time exists but has passed; reset it
+                        await self.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                        await self.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                        await self.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+        return False
 
 
 db = Database()
