@@ -57,8 +57,8 @@ class Database:
         self.col2 = mydb2.users
         self.users2 = mydb2.uersz
 
-        self.col2 = mydb3.users
-        self.users2 = mydb3.uersz        
+        self.col3 = mydb3.users
+        self.users3 = mydb3.uersz        
 
     def new_user(self, id, name):
         return dict(
