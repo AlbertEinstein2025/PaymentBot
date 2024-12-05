@@ -11,7 +11,7 @@ client2 = AsyncIOMotorClient(SECONDDB_URI)
 mydb2 = client2[DATABASE_NAME]
 
 client3 = AsyncIOMotorClient(THIRD_URI)
-mydb3 = client2[DATABASE_NAME]
+mydb3 = client3[DATABASE_NAME]
 
 #direct importing from utils causing loop, directly added here so no error should come.
 def extract_value_and_unit(ts):
@@ -81,18 +81,23 @@ class Database:
         await self.users3.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
-        user_data = await self.get_user(user_id)
+    """
+    Check if the user has premium access across all databases.
+    """
+    user_data_list = await self.get_user(user_id)
+    
+    for user_data in user_data_list:
         if user_data:
             expiry_time = user_data.get("expiry_time")
-            if expiry_time is None:
-                return False
-            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
-                return True
-            else:
-                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                await self.users2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                await self.users3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-        return False
+            if expiry_time:
+                if isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                    return True
+                else:
+                    # Expiry time exists but has passed; reset it
+                    await self.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                    await self.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                    await self.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+    return False
 
 
 db = Database()
