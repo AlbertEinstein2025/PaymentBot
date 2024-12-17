@@ -10,34 +10,63 @@ from database.database import *
 
 @Bot.on_message(filters.command("verify"))
 async def confirm_command_handler(client, message: Message):
-   
     user_id = message.from_user.id
 
+    # Set user state to 'processing_payment'
     set_state(user_id, "processing_payment")
 
+    # Send a message prompting for the UTR
     prompt_message = await message.reply_text(
         "📝 **Please enter your 12-digit UTR number to verify your payment.**"
     )
 
     try:
+        # Wait for the user to input their UTR or timeout after 150 seconds
         await asyncio.sleep(150)
 
         if get_state(user_id) == "processing_payment":
-
             reset_state(user_id)
 
+            # Update the prompt message if the UTR was not provided
             await prompt_message.edit_text(
                 "⏳ **Time's up!** You did not send a UTR number in time. Please try again. 😮‍💨",
-                reply_markup=InlineKeyboardMarkup([
-                    [InlineKeyboardButton("Try Again ♻️", callback_data="retry_confirm")]
-                ])
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton("Try Again ♻️", callback_data="retry_confirm")
+                ]])
             )
     except Exception as e:
         print(f"Error during timeout handling: {e}")
 
+
 @Bot.on_callback_query(filters.regex(r"^retry_confirm$"))
 async def retry_confirm_handler(client, query):
-    await confirm_command_handler(client, query.message)
+    user_id = query.from_user.id
+
+    # Reset the state in case it's still set
+    reset_state(user_id)
+
+    # Prompt the user to input the UTR again
+    set_state(user_id, "processing_payment")
+    prompt_message = await query.message.edit_text(
+        "📝 **Please enter your 12-digit UTR number to verify your payment.**"
+    )
+
+    try:
+        # Wait for the user to input their UTR or timeout after 150 seconds
+        await asyncio.sleep(150)
+
+        if get_state(user_id) == "processing_payment":
+            reset_state(user_id)
+
+            # Update the prompt message if the UTR was not provided
+            await prompt_message.edit_text(
+                "⏳ **Time's up!** You did not send a UTR number in time. Please try again. 😮‍💨",
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton("Try Again ♻️", callback_data="retry_confirm")
+                ]])
+            )
+    except Exception as e:
+        print(f"Error during timeout handling: {e}")
 
 @Bot.on_message(filters.command("addpremium") & filters.user(ADMINS))
 async def addpremium_cmd_handler(client: Client, message):
