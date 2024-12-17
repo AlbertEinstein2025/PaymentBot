@@ -85,3 +85,14 @@ Pay Via App: {}</blockquote>
 There was an error activating your premium subscription. Please contact the admin @Mr_SpidyBot.
 
 To Check Your Plan: Go to Bot and send /myplan for subscription info.⚡️</b>"""
+
+    PREMIUM_ADDED = """
+    <b>Premium Added Successfully ✅
+               
+    👤 User: {}
+    🎭 User ID: {}
+    ⏰ Premium Access: {}
+    ⏳ Joining Date: {}
+    ⏱️ Joining Time: {}
+    ⌛️ New Expiry Date: {}
+    ⏱️ New Expiry Time: {}</b>"""

@@ -1,10 +1,27 @@
 from config import ADMINS
 from pyrogram import Client, filters
 from bot import Bot
-from helper_func import give_premium
+from pyrogram.types import Message
+from helper_func import give_premium, set_state
+from Script import script
 import pytz
 from database.database import *
 
+@Bot.on_message(filters.command("confirm"))
+async def confirm_command_handler(client, message: Message):
+    """
+    Command to initiate the UTR verification process.
+    Redirects to handle_utr_input after asking for the UTR.
+    """
+    user_id = message.from_user.id
+
+    # Set user state to 'processing_payment'
+    set_state(user_id, "processing_payment")
+
+    # Prompt user to input their UTR
+    await message.reply_text(
+        "📝 **Please enter your 12-digit UTR number to verify your payment.**"
+    )
 
 @Bot.on_message(filters.command("addpremium") & filters.user(ADMINS))
 async def addpremium_cmd_handler(client: Client, message):
@@ -23,14 +40,15 @@ async def addpremium_cmd_handler(client: Client, message):
             user_mention = user.mention
 
             await message.reply_text(
-                f"**Premium added successfully ✅**\n\n"
-                f"👤 User: {user_mention}\n"
-                f"🎭 User ID: {user_id}\n"
-                f"⏰ Premium Access: {time_input}\n\n"
-                f"⏳ Joining Date: {current_time_ist.strftime('%d-%m-%Y')}\n"
-                f"⏱️ Joining Time: {current_time_ist.strftime('%I:%M:%S %p')}\n\n"
-                f"⌛️ New Expiry Date: {new_expiry_time_ist.strftime('%d-%m-%Y')}\n"
-                f"⏱️ New Expiry Time: {new_expiry_time_ist.strftime('%I:%M:%S %p')}\n"
+                script.PREMIUM_ADDED.format(
+                    user_mention,
+                    user_id,
+                    time_input,
+                    current_time_ist.strftime('%d-%m-%Y'),
+                    current_time_ist.strftime('%I:%M:%S %p'),
+                    new_expiry_time_ist.strftime('%d-%m-%Y'),
+                    new_expiry_time_ist.strftime('%I:%M:%S %p')
+                )
             )
         else:
             await message.reply_text("**Invalid time format. Please use '1day', '1hour', '1min', '1month', or '1year'**")

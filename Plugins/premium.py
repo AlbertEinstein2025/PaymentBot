@@ -369,14 +369,15 @@ async def handle_utr_input(client, message):
                     
                     await add_used_utr(subscription_type, payer, username, user_id, utr, amount)
                     await client.send_message(LOG_CHANNEL_ID, 
-                        text=f"#Added_Premium\n\n"
-                            f"👤 User: {user_mention}\n"
-                            f"🎭 User ID: {user_id}\n"
-                            f"⏰ Premium Access: {time_input}\n\n"
-                            f"⏳ Joining Date: {current_time_ist.strftime('%d-%m-%Y')}\n"
-                            f"⏱️ Joining Time: {current_time_ist.strftime('%I:%M:%S %p')}\n\n"
-                            f"⌛️ New Expiry Date: {new_expiry_time_ist.strftime('%d-%m-%Y')}\n"
-                            f"⏱️ New Expiry Time: {new_expiry_time_ist.strftime('%I:%M:%S %p')}\n", disable_web_page_preview=True
+                        text=script.PREMIUM_ADDED.format(
+                            user_mention,
+                            user_id,
+                            time_input,
+                            current_time_ist.strftime('%d-%m-%Y'),
+                            current_time_ist.strftime('%I:%M:%S %p'),
+                            new_expiry_time_ist.strftime('%d-%m-%Y'),
+                            new_expiry_time_ist.strftime('%I:%M:%S %p')
+                        ), disable_web_page_preview=True
                     )
                     
                     # Step 4: Send PDF receipt to the user
