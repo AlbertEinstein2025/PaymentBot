@@ -1,12 +1,12 @@
+import asyncio
+import pytz
 from config import ADMINS
 from pyrogram import Client, filters
 from bot import Bot
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
-from helper_func import give_premium, set_state
+from helper_func import *
 from Script import script
-import pytz
 from database.database import *
-import asyncio
 
 @Bot.on_message(filters.command("verify"))
 async def confirm_command_handler(client, message: Message):
