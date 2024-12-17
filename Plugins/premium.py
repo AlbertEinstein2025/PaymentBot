@@ -209,7 +209,7 @@ async def handle_confirm_payment(client, query):
         await query.message.reply_text("<b>Please enter 12 Digit UTR number:</b>")
 
         set_state(user_id, "processing_payment")
-        await asyncio.sleep(200)
+        await asyncio.sleep(150)
 
         if get_state(user_id) == "processing_payment":
             reset_state(user_id)
@@ -246,8 +246,8 @@ async def handle_utr_input(client, message):
         if not utr_input or not utr_input.isdigit():
             return
 
-        verifying_message = await message.reply_text("<b>Verifying UTR number...<b>")
-
+        verifying_message = await message.reply_text(f"✅ **UTR Received:** {utr_input}\nProcessing your payment verification...")
+        
         if not utr_input.isdigit() or len(utr_input) != 12:
             await verifying_message.edit_text("<b>Invalid UTR. Please enter a 12-digit number.</b>")
             return

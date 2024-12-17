@@ -10,39 +10,34 @@ import asyncio
 
 @Bot.on_message(filters.command("confirm"))
 async def confirm_command_handler(client, message: Message):
-    """
-    Command to initiate the UTR verification process.
-    Redirects to handle_utr_input after asking for the UTR.
-    """
+   
     user_id = message.from_user.id
 
-    # Set user state to 'processing_payment'
     set_state(user_id, "processing_payment")
 
-    # Prompt user to input their UTR and save the message object
     prompt_message = await message.reply_text(
         "📝 **Please enter your 12-digit UTR number to verify your payment.**"
     )
 
     try:
-        # Wait for UTR input message from the user
-        user_message = await client.listen(message.chat.id, timeout=150)
+        await asyncio.sleep(150)
 
-        # Assuming `handle_utr_input` processes the UTR verification
-        await handle_utr_input(client, user_message)
+        if get_state(user_id) == "processing_payment":
 
-        # Delete the prompt message after successful UTR input
-        await prompt_message.delete()
+            reset_state(user_id)
 
-    except asyncio.TimeoutError:
-        # Timeout after 150 seconds
-        reset_state(user_id)
-        await message.reply_text(
-            "⏳ **Time's up!** You did not send a UTR number in time. Please try again. 😮‍💨",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Try Again ♻️", switch_inline_query_current_chat="/confirm")]
-            ])
-        )
+            await prompt_message.edit_text(
+                "⏳ **Time's up!** You did not send a UTR number in time. Please try again. 😮‍💨",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("Try Again ♻️", callback_data="retry_confirm")]
+                ])
+            )
+    except Exception as e:
+        print(f"Error during timeout handling: {e}")
+
+@Bot.on_callback_query(filters.regex(r"^retry_confirm$"))
+async def retry_confirm_handler(client, query):
+    await confirm_command_handler(client, query.message)
 
 @Bot.on_message(filters.command("addpremium") & filters.user(ADMINS))
 async def addpremium_cmd_handler(client: Client, message):
