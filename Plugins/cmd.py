@@ -8,7 +8,7 @@ import pytz
 from database.database import *
 import asyncio
 
-@Bot.on_message(filters.command("confirm"))
+@Bot.on_message(filters.command("verify"))
 async def confirm_command_handler(client, message: Message):
    
     user_id = message.from_user.id
