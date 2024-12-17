@@ -1,11 +1,12 @@
 from config import ADMINS
 from pyrogram import Client, filters
 from bot import Bot
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from helper_func import give_premium, set_state
 from Script import script
 import pytz
 from database.database import *
+import asyncio
 
 @Bot.on_message(filters.command("confirm"))
 async def confirm_command_handler(client, message: Message):
@@ -18,10 +19,30 @@ async def confirm_command_handler(client, message: Message):
     # Set user state to 'processing_payment'
     set_state(user_id, "processing_payment")
 
-    # Prompt user to input their UTR
-    await message.reply_text(
+    # Prompt user to input their UTR and save the message object
+    prompt_message = await message.reply_text(
         "📝 **Please enter your 12-digit UTR number to verify your payment.**"
     )
+
+    try:
+        # Wait for UTR input message from the user
+        user_message = await client.listen(message.chat.id, timeout=150)
+
+        # Assuming `handle_utr_input` processes the UTR verification
+        await handle_utr_input(client, user_message)
+
+        # Delete the prompt message after successful UTR input
+        await prompt_message.delete()
+
+    except asyncio.TimeoutError:
+        # Timeout after 150 seconds
+        reset_state(user_id)
+        await message.reply_text(
+            "⏳ **Time's up!** You did not send a UTR number in time. Please try again. 😮‍💨",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Try Again ♻️", switch_inline_query_current_chat="/confirm")]
+            ])
+        )
 
 @Bot.on_message(filters.command("addpremium") & filters.user(ADMINS))
 async def addpremium_cmd_handler(client: Client, message):

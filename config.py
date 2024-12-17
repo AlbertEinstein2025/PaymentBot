@@ -6,7 +6,7 @@ API_ID = 25412293
 
 BOT_TOKEN = "7281069995:AAH6WTlC1uIX6xP_Qn_S-gVJkiM3YZyE_Z0"
 
-QR_CODE = "https://te.legra.ph/file/c752fe552eba09dd31cb0.jpg" 
+QR_CODE = "https://envs.sh/8bi.jpg" 
 
 PDF_LOGO = 'https://envs.sh/qua.png'
 
