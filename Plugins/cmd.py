@@ -84,6 +84,7 @@ async def addpremium_cmd_handler(client: Client, message):
             user = await client.get_users(user_id)
             user_mention = user.mention
 
+            # Notify the admin about premium addition
             await message.reply_text(
                 script.PREMIUM_ADDED.format(
                     user_mention,
@@ -94,6 +95,14 @@ async def addpremium_cmd_handler(client: Client, message):
                     new_expiry_time_ist.strftime('%d-%m-%Y'),
                     new_expiry_time_ist.strftime('%I:%M:%S %p')
                 )
+            )
+
+            # Notify the user about premium addition
+            await client.send_message(
+                chat_id=user_id,
+                text=f"<b>🎉 ᴄᴏɴɢʀᴀᴛᴜʟᴀᴛɪᴏɴs {user_mention},\n\n✅ ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ʙᴇᴇɴ ᴀᴅᴅᴇᴅ ✅</b>\n"
+                     f"<b>🔑 ᴠᴀʟɪᴅ ғʀᴏᴍ:</b> {current_time_ist.strftime('%d-%m-%Y %I:%M:%S %p')}\n"
+                     f"<b>📅 ᴜɴᴛɪʟ:</b> {new_expiry_time_ist.strftime('%d-%m-%Y %I:%M:%S %p')}"
             )
         else:
             await message.reply_text("**Invalid time format. Please use '1day', '1hour', '1min', '1month', or '1year'**")
