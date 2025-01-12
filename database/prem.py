@@ -100,19 +100,19 @@ class Database:
         return False
 
     async def remove_premium_access(self, user_id):
-    """Remove premium access for the user from all databases."""
-    # Flag to check if any update was made
-    updated = False
+        """Remove premium access for the user from all databases."""
+        # Flag to check if any update was made
+        updated = False
 
-    # List of collections to iterate over
-    collections = [self.users, self.users2, self.users3]
+        # List of collections to iterate over
+        collections = [self.users, self.users2, self.users3]
 
-    for collection in collections:
-        result = await collection.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-        # If any collection updates successfully, set the flag to True
-        if result.modified_count > 0:
-            updated = True
+        for collection in collections:
+            result = await collection.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+            # If any collection updates successfully, set the flag to True
+            if result.modified_count > 0:
+                updated = True
 
-    return updated
-    
+        return updated
+
 db = Database()
