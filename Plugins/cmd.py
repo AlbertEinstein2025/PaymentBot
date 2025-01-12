@@ -100,40 +100,25 @@ async def addpremium_cmd_handler(client: Client, message):
     else:
         await message.reply_text("**Usage: /addpremium user_id time**")
 
-@Bot.on_message(filters.command("removep") & filters.user(ADMINS))
-async def remove_premium_cmd_handler(client: Client, message):
+@Client.on_message(filters.command("removep") & filters.user(ADMINS))
+async def remove_premium(client, message):
     if len(message.command) == 2:
-        try:
-            user_id = int(message.command[1])
+        user_id = int(message.command[1])
+        user = await client.get_users(user_id)
 
-            # Retrieve user data to confirm existence
-            user_data, user_data2, user_data3 = await db.get_user(user_id)
-
-            if any([user_data, user_data2, user_data3]):  # If user exists in any database
-                # Remove premium access from all databases
-                result1 = await db.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                result2 = await db.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                result3 = await db.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-
-                # Check if any database was updated
-                if result1.modified_count > 0 or result2.modified_count > 0 or result3.modified_count > 0:
-                    user = await client.get_users(user_id)
-                    user_mention = user.mention
-                    await message.reply_text(
-                        f"✅ Premium access removed for {user_mention} (`{user_id}`) across all databases."
-                    )
-                else:
-                    await message.reply_text(
-                        f"⚠️ No changes made. Premium access might already be removed for user `{user_id}`."
-                    )
-            else:
-                await message.reply_text(f"⚠️ User with ID `{user_id}` not found in any database.")
-        except ValueError:
-            await message.reply_text("❌ Invalid user ID. Please provide a valid integer user ID.")
-        except Exception as e:
-            await message.reply_text(f"❌ Error occurred: {e}")
+        # Call the updated remove_premium_access method
+        if await db.remove_premium_access(user_id):
+            await message.reply_text("<b>sᴜᴄᴄᴇssꜰᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ✅</b>")
+            await client.send_message(
+                chat_id=user_id,
+                text=f"<b>ʜᴇʏ {user.mention},\n\n⚠️ ʏᴏᴜʀ ᴘʀᴇᴍɪᴜᴍ ᴀᴄᴄᴇss ʜᴀs ʙᴇᴇɴ ʀᴇᴍᴏᴠᴇᴅ 🚫</b>"
+            )
+        else:
+            await message.reply_text(
+                "<b>⚠️ No changes made. Premium access might already be removed for the user.</b>"
+            )
     else:
-        await message.reply_text("**Usage: /removep user_id**")
+        await message.reply_text("Usage: <code>/removep user_id</code>")
 
 @Bot.on_message(filters.command("removeutr") & filters.user(ADMINS))
 async def handle_remove_utr_command(client, message):
