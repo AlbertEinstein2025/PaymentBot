@@ -106,21 +106,26 @@ async def remove_premium_cmd_handler(client: Client, message):
         try:
             user_id = int(message.command[1])
 
-            # Retrieve user data to check if they exist
+            # Retrieve user data to confirm existence
             user_data, user_data2, user_data3 = await db.get_user(user_id)
 
             if any([user_data, user_data2, user_data3]):  # If user exists in any database
-                # Update each database to remove premium access
-                await db.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                await db.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                await db.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                # Remove premium access from all databases
+                result1 = await db.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                result2 = await db.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+                result3 = await db.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
 
-                # Notify admin of success
-                user = await client.get_users(user_id)
-                user_mention = user.mention
-                await message.reply_text(
-                    f"✅ Premium access removed for {user_mention} (`{user_id}`) across all databases."
-                )
+                # Check if any database was updated
+                if result1.modified_count > 0 or result2.modified_count > 0 or result3.modified_count > 0:
+                    user = await client.get_users(user_id)
+                    user_mention = user.mention
+                    await message.reply_text(
+                        f"✅ Premium access removed for {user_mention} (`{user_id}`) across all databases."
+                    )
+                else:
+                    await message.reply_text(
+                        f"⚠️ No changes made. Premium access might already be removed for user `{user_id}`."
+                    )
             else:
                 await message.reply_text(f"⚠️ User with ID `{user_id}` not found in any database.")
         except ValueError:
