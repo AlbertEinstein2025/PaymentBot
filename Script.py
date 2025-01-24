@@ -2,7 +2,7 @@ import os
 
 class script(object):
     START_MESSAGE = """
-<b>Hi {},
+<b>Hi {}, 
 
 Welcome to {} 😊
 
