@@ -80,10 +80,8 @@ async def give_premium(user_id, time_input):
         return None, None  # Return None if invalid time format
 
 def verify_payment(utr):
-        
-        url =f"https://api.golive.host/Payment/Bharatpe/v1?merchantId=51342398&token=2db47183ad9a453a97ffa6fd1aad3444&action=paymentstatus&utr={utr}"
 
-    # url = f"https://0dns.me/Bharatpe/verify.php?token=2db47183ad9a453a97ffa6fd1aad3444&txn_id={utr}"
+    url = f"https://0dns.me/Bharatpe/verify.php?token=2db47183ad9a453a97ffa6fd1aad3444&txn_id={utr}"
 
 
     try:
