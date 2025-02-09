@@ -81,7 +81,7 @@ async def give_premium(user_id, time_input):
 
 def verify_payment(utr):
 
-    url = f"https://0dns.me/Bharatpe/verify.php?token=2db47183ad9a453a97ffa6fd1aad3444&txn_id={utr}"
+    url = f"https://bharatpe.22web.org/v1/verify.php?utr={utr}"
 
 
     try:
