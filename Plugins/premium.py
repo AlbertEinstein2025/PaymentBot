@@ -22,13 +22,13 @@ def download_image(image_url, local_filename):
         f.write(response.content)
 
 imgage_url = PDF_LOGO
-local_filename = 'logo.png'
+local_filename = 'logo.jpg'
 download_image(imgage_url, local_filename)
 
 class PDF(FPDF):
     def header(self):
         # Add logo
-        self.image('logo.png', 10, 8, 20, 20)
+        self.image('logo.jpg', 10, 8, 20, 20)
         
         # Add the header text
         self.set_font('Arial', 'B', 14)
