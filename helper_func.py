@@ -80,20 +80,30 @@ async def give_premium(user_id, time_input):
     else:
         return None, None  # Return None if invalid time format
 
-def verify_payment(utr, retries=3, delay=5):
-    url = f"http://bharatpe.22web.org/v1/verify.php?utr={utr}"
-    
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, timeout=10)  # Set timeout
-            response.raise_for_status()
-            return response.json()  # Directly return the JSON response
-        except requests.exceptions.RequestException as e:
-            print(f"Attempt {attempt + 1} failed: {e}")
-            time.sleep(delay)
-    
-    print("All retry attempts failed.")
-    return None
+def verify_payment(utr):
+
+    url = f"https://api.ispidy.com/Bharatpe/v1/verify.php?utr={utr}"
+        
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+
+        # Parse JSON response
+        data = json.loads(response.text)
+
+        # Return a dictionary with the amount and status
+        return {
+            'amount': data.get('amount'),
+            'status': data.get('status'),
+            'payer': data.get('payer'),
+            'app': data.get('app')
+        }
+    except requests.exceptions.RequestException as e:
+        print(f"Error verifying payment: {e}")
+        return None
+    except json.JSONDecodeError:
+        print("Error decoding JSON response.")
+        return None
 
 CURRENT_STATE = {}
 
