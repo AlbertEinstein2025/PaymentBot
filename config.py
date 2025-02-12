@@ -8,7 +8,7 @@ BOT_TOKEN = "7281069995:AAH6WTlC1uIX6xP_Qn_S-gVJkiM3YZyE_Z0"
 
 QR_CODE = "https://envs.sh/8bi.jpg" 
 
-PDF_LOGO = 'https://envs.sh/qua.png'
+PDF_LOGO = 'https://iili.io/2mNOHut.jpg'
 
 try:
     ADMINS=[]
