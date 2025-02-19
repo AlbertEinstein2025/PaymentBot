@@ -246,27 +246,32 @@ async def manual_payment_verification(client, query):
     else:
         await query.answer("❌ Payment verification failed. Contact support if the issue persists.", show_alert=True)
 
+
 async def verify_payment_later(client, message, txn_id, user_id):
     max_attempts = 5  # Check up to 5 times (every 1 minute)
+    last_status = None  # Track the last payment status
 
     for attempt in range(max_attempts):
         await asyncio.sleep(60)  # Wait for 1 minute
 
         verification_result = await verify_txn_id(txn_id)
-
         if verification_result:
-            status = verification_result.get('status')
-
+            status = verification_result['status']
+            
             if status == "SUCCESS":
                 await activate_plan(user_id)
                 return  # Stop further checks
-            elif status == "FAILED":
-                break  # No need to retry if payment is explicitly failed
 
-    # If payment is not successful within 5 minutes, delete the QR message
+            last_status = status  # Update last known status
+
+    # After 5 minutes, decide the final message based on the last status
+    if last_status == "FAILED":
+        await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
+    else:
+        await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
+
+    # Delete the QR message
     try:
         await message.delete()
     except Exception as e:
         print(f"Failed to delete QR message: {e}")
-
-    await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
