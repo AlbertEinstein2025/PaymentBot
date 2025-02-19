@@ -139,22 +139,10 @@ async def start(client, message):
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
                     [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
-                    [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]
+                    [InlineKeyboardButton("💰 Buy Now", callback_data="bharatpe_premium")]
             ]
         )
     )
-
-# @Bot.on_callback_query(filters.regex(r'^help$'))
-# async def help_callback(client, query):
-#     await query.message.edit(
-#         script.HELP_TXT.format(query.from_user.mention),
-#         reply_markup=InlineKeyboardMarkup(
-#             [
-#                 [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")],  # New callback for premium purchase
-#                 [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
-#             ]
-#         )
-#     )
 
 @Bot.on_callback_query(filters.regex(r'^about$'))
 async def about_callback(client, query):
@@ -180,7 +168,20 @@ async def premium_plans_callback(client, query):
     )
 
 @Bot.on_callback_query(filters.regex(r'^buy_premium$'))
-async def buy_premium(client, query):
+async def premium_plans_callback(client, query):
+    await query.message.edit(
+        script.CHOOSE_METHOD.format(query.from_user.mention),
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("BharatPe", callback_data="bharatpe_premium")],
+                [InlineKeyboardButton("PayTM", callback_data="paytm_premium")],
+                [InlineKeyboardButton("🔙 Go Back", callback_data="back_to_start")]
+            ]
+        )
+    )
+
+@Bot.on_callback_query(filters.regex(r'^bharatpe_premium$'))
+async def bharatpe_premium(client, query):
     confirm_payment_keyboard = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("🧾 Confirm Payment", callback_data="confirm_payment")]
@@ -215,27 +216,6 @@ async def handle_confirm_payment(client, query):
             reset_state(user_id)
             await query.message.reply_text("<b>Times up! please try again 😮‍💨</b>", reply_markup=ReplyKeyboardRemove())
             await query.message.reply_text("<b>Don't worry, no need to pay again. Just click on Try Again Button and send your UTR number again to verify the payment.</b>", reply_markup=retry_btn)
-
-# @Bot.on_callback_query(filters.regex(r'^cancel_payment$'))
-# async def handle_cancel(client, query):
-#     user_id = query.from_user.id
-#     if get_state(user_id) == "processing_payment":
-#         reset_state(user_id)
-#         await query.message.reply_text("<b>Verification cancelled.</b>", reply_markup=ReplyKeyboardRemove())
-#         await start(client, query.message)
-
-# @Bot.on_callback_query(filters.regex(r'^go_back$'))
-# async def handle_back(client, query):
-#     user_id = query.from_user.id
-
-#     if get_state(user_id):
-#         reset_state(user_id)
-
-#     await start(client, query.message)
-#     try:
-#         await query.message.delete()
-#     except Exception as e:
-#         print(f"Error deleting message: {e}")
 
 @Bot.on_message(filters.text & filters.private & filters.incoming, group=2)
 async def handle_utr_input(client, message):
@@ -424,7 +404,7 @@ Click below to browse our plans and unlock the premium experience! ✨</b>"""
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
                 [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
-                [InlineKeyboardButton("💰 Buy Now", callback_data="buy_premium")]
+                [InlineKeyboardButton("💰 Buy Now", callback_data="bharatpe_premium")]
             ]
         )
     )

@@ -7,9 +7,14 @@ database = dbclient[DB_NAME]
 
 user_data = database['users']
 used_utrs = database['used_utrs']
+used_txnid = database['used_txnid']
 
 async def is_utr_used(utr):
     found = used_utrs.find_one({'UTR Number': utr})
+    return bool(found)
+
+async def is_txnid_used(txn_id):
+    found = used_txnid.find_one({'Txn Id': txn_id})
     return bool(found)
 
 async def add_used_utr(subscription_type, payer, username, user_id, utr, amount):
@@ -27,6 +32,24 @@ async def add_used_utr(subscription_type, payer, username, user_id, utr, amount)
         'Username': username,
         'User ID': user_id,
         'UTR Number': utr,
+        'Amount': amount,
+        
+    })
+
+async def add_used_txnid(subscription_type, username, user_id, txn_id, amount):
+    """
+    Adds a UTR to the used_utrs collection along with user_id and username.
+
+    Args:
+        utr: The UTR to add.
+        user_id: The Telegram user ID associated with the UTR.
+        username: The Telegram username associated with the UTR (or None if not available).
+    """
+    used_txnid.insert_one({
+        'Subscription Type': subscription_type,
+        'Username': username,
+        'User ID': user_id,
+        'Txn Id': txn_id,
         'Amount': amount,
         
     })

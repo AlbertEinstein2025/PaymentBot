@@ -47,6 +47,19 @@ Fᴏʀ ᴀɴʏ ǫᴜᴇʀɪᴇꜱ ᴍꜱɢ: @Mr_SpidyBot</b>"""
 Cʜᴏᴏꜱᴇ ᴀɴʏ ᴘʟᴀɴ ᴀᴄᴄᴏʀᴅɪɴɢ ᴛᴏ ʏᴏᴜʀ ᴅᴇꜱɪʀᴇ.
 Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 
+    CHOOSE_METHOD = """
+    <b>👋 ʜᴇʏ {},
+    Choose your desire payment method where you want to make payment.
+    
+    1-Bharatpe: Need UTR for payment Verification
+    2-Paytm Automation, No need any transaction detail
+        just make paytm on qr and press Payment Done</b>"""
+
+    CHOOSE_PLAN = """
+<b>Available Paid Plans</b>
+
+Choose any plan by pressing the button below."""
+
     PAYMENT = """
 <b>👋 ʜᴇʏ {},
 
@@ -59,6 +72,18 @@ Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 
 🆔 UPI ID: 
 `bharatpe.8p0y0j5O2k82600@fbpe` (Tap to copy)</b>"""
+
+
+    PREMIUM_ADDED = """
+    <b>Premium Added Successfully ✅
+               
+    👤 User: {}
+    🎭 User ID: {}
+    ⏰ Premium Access: {}
+    ⏳ Joining Date: {}
+    ⏱️ Joining Time: {}
+    ⌛️ New Expiry Date: {}
+    ⏱️ New Expiry Time: {}</b>"""
 
     PAYMENT_VERIFIED = """
 <b>🎉 Payment Verified! 🎉
@@ -86,13 +111,25 @@ There was an error activating your premium subscription. Please contact the admi
 
 To Check Your Plan: Go to Bot and send /myplan for subscription info.⚡️</b>"""
 
-    PREMIUM_ADDED = """
-    <b>Premium Added Successfully ✅
-               
-    👤 User: {}
-    🎭 User ID: {}
-    ⏰ Premium Access: {}
-    ⏳ Joining Date: {}
-    ⏱️ Joining Time: {}
-    ⌛️ New Expiry Date: {}
-    ⏱️ New Expiry Time: {}</b>"""
+
+    PAYTM_VERIFIED = """
+<b>🎉 Payment Verified! 🎉
+
+<blockquote>Amount Received: ₹{}
+
+<blockquote>{}
+
+🥳 Congratulations! Your premium subscription is now active on Both Bots until {}. ✨</blockquote>
+
+To Check Your Plan: Go to Both Bot and send /myplan for getting subscription info.⚡️</b>"""
+
+    PAYTM_VERIFIED2 = """
+<b>🎉 Payment Verified! 🎉
+
+Amount Received: ₹{}
+
+{}
+
+<blockquote>There was an error activating your premium subscription. Please contact the admin @Mr_SpidyBot.
+
+To Check Your Plan: Go to Bot and send /myplan for subscription info.⚡️</b></blockquote>"""

@@ -4,7 +4,7 @@ API_HASH = "d58456be9931f3f6b8154a626fc1b3c6"
 
 API_ID = 25412293
 
-BOT_TOKEN = "7281069995:AAH6WTlC1uIX6xP_Qn_S-gVJkiM3YZyE_Z0"
+BOT_TOKEN = "5814052359:AAGVvrzgvv5SXFEijN7jucA5gg341Ys9S68"
 
 QR_CODE = "https://envs.sh/8bi.jpg" 
 
@@ -17,7 +17,7 @@ try:
 except ValueError:
     raise Exception("Your Admins list does not contain valid integers.")
 
-DB_URI = "mongodb+srv://dextin:zaxscd123@leakedjalwa.9yauwbt.mongodb.net/?retryWrites=true&w=majority&appName=LeakedJalwa"
+DB_URI = "mongodb+srv://spidy:MongoDB1432@cluster0.7vekg.mongodb.net/?retryWrites=true&w=majority"
 
 DB_NAME = "YDPaymentBot"
 
