@@ -186,10 +186,9 @@ async def paytm_premium(client, query):
 
 @Bot.on_callback_query(filters.regex(r'^paytm_(\d+)$'))
 async def generate_qr_code(client, query):
-    amount = int(query.matches[0].group(1))  # Extract amount from callback data
+    amount = int(query.matches[0].group(1))
     user_id = query.from_user.id
 
-    # Generate QR Code
     url = f"https://api.ispidy.com/paytm/qr_generator.php?id={user_id}&amount={amount}"
     response = requests.get(url).json()
 
@@ -208,8 +207,8 @@ async def generate_qr_code(client, query):
             )
         )
 
-        # Start Automatic Verification
-        asyncio.create_task(verify_payment_later(client, verifying_message, txn_id, user_id, amount))
+        # ✅ Corrected parameter for verify_payment_later
+        asyncio.create_task(verify_payment_later(client, verifying_message, txn_id, user_id))
 
     else:
         await query.answer("Failed to generate QR Code. Please try again later.", show_alert=True)
@@ -219,16 +218,21 @@ async def manual_payment_verification(client, query):
     txn_id, user_id, amount = query.matches[0].groups()
     user_id, amount = int(user_id), int(amount)
 
-    verification_result = await verify_txn_id(txn_id)  # Call API to check payment status
+    if not txn_id:  # Ensures txn_id is valid
+        await query.answer("❌ Invalid Transaction ID. Please try again.", show_alert=True)
+        return
+
+    verification_result = await verify_txn_id(txn_id)
 
     if verification_result and verification_result.get("status") == "SUCCESS":
         await paytm_automation(client, query.message, txn_id, user_id, amount)
     else:
         await query.answer("❌ Payment not found! Please try again later or contact support.", show_alert=True)
 
-async def verify_payment_later(client, message, txn_id, user_id, qr_message):
+
+async def verify_payment_later(client, message, txn_id, user_id):
     max_attempts = 5  # Check up to 5 times (every 1 minute)
-    
+
     for attempt in range(max_attempts):
         await asyncio.sleep(60)  # Wait for 1 minute
 
@@ -237,13 +241,12 @@ async def verify_payment_later(client, message, txn_id, user_id, qr_message):
             status = verification_result['status']
             
             if status == "SUCCESS":
-                # If payment is successful, proceed with activation
                 await activate_plan(user_id)
                 return  # Stop further checks
-        
+
     # If payment is not successful within 5 minutes, delete the QR message
     try:
-        await qr_message.delete()
+        await message.delete()
     except Exception as e:
         print(f"Failed to delete QR message: {e}")
     
