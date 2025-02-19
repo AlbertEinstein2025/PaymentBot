@@ -4,6 +4,7 @@ from bot import Bot
 from pyrogram.types import InputMediaPhoto
 import asyncio
 from helper_func import *
+from paytm import *
 from database.database import *
 from Script import script
 import pandas as pd
