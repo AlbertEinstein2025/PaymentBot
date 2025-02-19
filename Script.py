@@ -49,11 +49,10 @@ Tʜᴀɴᴋ ʏᴏᴜ! 💝</b>"""
 
     CHOOSE_METHOD = """
     <b>👋 ʜᴇʏ {},
-    Choose your desire payment method where you want to make payment.
+Choose your desire payment method where you want to make payment.
     
-    1-Bharatpe: Need UTR for payment Verification
-    2-Paytm Automation, No need any transaction detail
-        just make paytm on qr and press Payment Done</b>"""
+1-Bharatpe: Need UTR for payment Verification
+2-Paytm Automation, No need any transaction detail,just make paytm on qr and press Payment Done</b>"""
 
     CHOOSE_PLAN = """
 <b>Available Paid Plans</b>

@@ -1,6 +1,5 @@
 from aiohttp import web
 from aiohttp import web
-from . import premium, paytm
 
 routes = web.RouteTableDef()
 
