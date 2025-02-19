@@ -133,7 +133,8 @@ async def verify_txn_id(txn_id):
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
 async def generate_pdf_receipt(user_id, amount, txn_id, current_time_ist):
-   
+
+    pdf = PDF
     # Title Section
     pdf.set_font('Arial', 'B', 18)
     pdf.set_fill_color(255, 0, 0)  # Red background
