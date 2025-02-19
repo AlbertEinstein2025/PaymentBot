@@ -82,7 +82,7 @@ async def verify_txn_id(txn_id):
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
 async def generate_pdf_receipt(user_id, amount, txn_id, current_time_ist):
-    pdf = PDF()
+    pdf = FPDF()
     pdf.add_page()
 
     # Add Border
@@ -247,7 +247,7 @@ async def manual_payment_verification(client, query):
         await query.answer("❌ Payment verification failed. Contact support if the issue persists.", show_alert=True)
 
 
-async def verify_payment_later(client, message, txn_id, user_id):
+async def verify_payment_later(client, message, txn_id, user_id, amount):
     max_attempts = 5  # Check up to 5 times (every 1 minute)
     last_status = None  # Track the last payment status
 
@@ -257,9 +257,9 @@ async def verify_payment_later(client, message, txn_id, user_id):
         verification_result = await verify_txn_id(txn_id)
         if verification_result:
             status = verification_result['status']
-            
+
             if status == "SUCCESS":
-                await activate_plan(user_id)
+                await paytm_automation(client, message, txn_id, user_id, amount)
                 return  # Stop further checks
 
             last_status = status  # Update last known status
@@ -267,7 +267,7 @@ async def verify_payment_later(client, message, txn_id, user_id):
     # After 5 minutes, decide the final message based on the last status
     if last_status == "FAILED":
         await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
-    else:
+    elif last_status:  # Only send if some status was received
         await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
 
     # Delete the QR message
