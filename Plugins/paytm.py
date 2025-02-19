@@ -47,28 +47,39 @@ local_filename = 'logo.jpg'
 download_image(imgage_url, local_filename)
 
 async def verify_txn_id(txn_id):
-
     url = f"https://api.ispidy.com/paytm/verify.php?txn_id={txn_id}"
-        
+    
     try:
         response = requests.get(url)
         response.raise_for_status()
 
         # Parse JSON response
-        data = json.loads(response.text)
+        data = response.json()
 
-        # Return a dictionary with the amount and status
+        amount = data.get('amount')
+        status = data.get('status')
+        utr = data.get('utr')
+
+        if amount is None:
+            return {"status": "FAILED", "message": "Payment not found or not completed."}
+
+        try:
+            amount = int(float(amount))
+        except ValueError:
+            return {"status": "FAILED", "message": "Invalid amount received."}
+
         return {
-            'amount': int(float(data.get('amount'))),
-            'status': data.get('status'),
-            'utr': data.get('utr')
+            'amount': amount,
+            'status': status,
+            'utr': utr
         }
+
     except requests.exceptions.RequestException as e:
         print(f"Error verifying payment: {e}")
-        return None
+        return {"status": "ERROR", "message": str(e)}
     except json.JSONDecodeError:
         print("Error decoding JSON response.")
-        return None
+        return {"status": "ERROR", "message": "Invalid JSON response."}
 
 async def generate_pdf_receipt(user_id, amount, txn_id, current_time_ist):
     pdf = PDF()
@@ -224,11 +235,16 @@ async def manual_payment_verification(client, query):
 
     verification_result = await verify_txn_id(txn_id)
 
-    if verification_result and verification_result.get("status") == "SUCCESS":
-        await paytm_automation(client, query.message, txn_id, user_id, amount)
-    else:
-        await query.answer("❌ Payment not found! Please try again later or contact support.", show_alert=True)
+    if not verification_result:
+        await query.answer("❌ Error verifying payment. Please try again later.", show_alert=True)
+        return
 
+    if verification_result.get("status") == "SUCCESS":
+        await paytm_automation(client, query.message, txn_id, user_id, amount)
+    elif verification_result.get("status") == "FAILED":
+        await query.answer("❌ Payment not found or not completed. Please try again later.", show_alert=True)
+    else:
+        await query.answer("❌ Payment verification failed. Contact support if the issue persists.", show_alert=True)
 
 async def verify_payment_later(client, message, txn_id, user_id):
     max_attempts = 5  # Check up to 5 times (every 1 minute)
@@ -237,17 +253,20 @@ async def verify_payment_later(client, message, txn_id, user_id):
         await asyncio.sleep(60)  # Wait for 1 minute
 
         verification_result = await verify_txn_id(txn_id)
+
         if verification_result:
-            status = verification_result['status']
-            
+            status = verification_result.get('status')
+
             if status == "SUCCESS":
                 await activate_plan(user_id)
                 return  # Stop further checks
+            elif status == "FAILED":
+                break  # No need to retry if payment is explicitly failed
 
     # If payment is not successful within 5 minutes, delete the QR message
     try:
         await message.delete()
     except Exception as e:
         print(f"Failed to delete QR message: {e}")
-    
+
     await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
