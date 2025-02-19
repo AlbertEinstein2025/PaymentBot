@@ -47,14 +47,55 @@ local_filename = 'logo.jpg'
 download_image(imgage_url, local_filename)
 
 class PDF(FPDF):
-    def add_border(self):
-        self.set_draw_color(0, 0, 0)  # Set black color for border
-        self.rect(5.0, 5.0, 200.0, 287.0)  # (x, y, width, height)
+    def header(self):
+        # Add logo
+        self.image('logo.jpg', 10, 8, 20, 20)
+        
+        # Add the header text
+        self.set_font('Arial', 'B', 14)
+        self.set_text_color(255, 0, 0)  # Red color
+        self.cell(0, 10, 'YD Premium', 0, 1, 'C')
+        self.ln(6)
 
-# Usage
-pdf = PDF()
-pdf.add_page()
-pdf.add_border()  # Now it will work
+        # Add text to the top right
+        self.set_font('Arial', '', 9)
+        self.set_text_color(0, 0, 0)  # Black color
+        
+        # Calculate X position to align text to the right
+        page_width = self.w - 10  # Leave some margin from the right
+        self.set_xy(page_width - 70, 8)  # Adjust X and Y position
+
+        # Print the right-aligned text
+        self.cell(0, 10, 'Group Name: YD Movie Zone', 0, 1, 'R')
+        self.set_xy(page_width - 70, 13)
+        self.cell(0, 10, 'Grp Username: @YDMovieZone', 0, 1, 'R')
+        self.set_xy(page_width - 70, 18)
+        self.cell(0, 10, 'Contact us: @Mr_SpidyBot', 0, 1, 'R')
+        self.ln(6)
+    def footer(self):
+        # Go to 1.5 cm from bottom
+        self.set_y(-15)
+        # Select Arial italic 8
+        self.set_font('Arial', 'B', 11)
+        self.set_text_color(128, 128, 128)
+        # Footer message
+        self.cell(0, 10, 'Thank you for your payment!', 0, 0, 'C')
+
+    def add_border(self):
+        # Add a border around the entire page
+        self.set_draw_color(0, 102, 204)  # Dark blue color for the border
+        self.set_line_width(1)  # Border thickness
+        # Draw the border (x, y, width, height)
+        self.rect(5, 5, self.w - 10, self.h - 10)
+
+    def add_section_box(self, title, color):
+        # Add a colored background box for a section title
+        self.set_fill_color(*color)
+        self.set_font('Arial', 'B', 14)
+        self.cell(0, 10, title, 0, 1, 'L', 1)
+        self.set_font('Arial', '', 12)
+        self.set_fill_color(255, 255, 255)  # Reset to white for content
+
 
 async def verify_txn_id(txn_id):
     url = f"https://api.ispidy.com/paytm/verify.php?txn_id={txn_id}"
