@@ -408,7 +408,4 @@ Click below to browse our plans and unlock the premium experience! ✨</b>"""
             ]
         )
     )
-
-# @Bot.on_callback_query(filters.regex(r'^close_message$'))
-# async def close_message_callback(client, query):
-#     await query.message.delete()
+#---------------------------------------------------------------------------------------------#
