@@ -46,6 +46,16 @@ imgage_url = PDF_LOGO
 local_filename = 'logo.jpg'
 download_image(imgage_url, local_filename)
 
+class PDF(FPDF):
+    def add_border(self):
+        self.set_draw_color(0, 0, 0)  # Set black color for border
+        self.rect(5.0, 5.0, 200.0, 287.0)  # (x, y, width, height)
+
+# Usage
+pdf = PDF()
+pdf.add_page()
+pdf.add_border()  # Now it will work
+
 async def verify_txn_id(txn_id):
     url = f"https://api.ispidy.com/paytm/verify.php?txn_id={txn_id}"
     
@@ -82,12 +92,7 @@ async def verify_txn_id(txn_id):
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
 async def generate_pdf_receipt(user_id, amount, txn_id, current_time_ist):
-    pdf = FPDF()
-    pdf.add_page()
-
-    # Add Border
-    pdf.add_border()
-
+   
     # Title Section
     pdf.set_font('Arial', 'B', 18)
     pdf.set_fill_color(255, 0, 0)  # Red background
