@@ -168,7 +168,7 @@ async def premium_plans_callback(client, query):
     )
 
 @Bot.on_callback_query(filters.regex(r'^buy_premium$'))
-async def premium_plans_callback(client, query):
+async def buy_premium_callback(client, query):
     await query.message.edit(
         script.CHOOSE_METHOD.format(query.from_user.mention),
         reply_markup=InlineKeyboardMarkup(
