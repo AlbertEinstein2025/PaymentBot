@@ -264,8 +264,9 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
 
 @Bot.on_callback_query(filters.regex(r'^paytm_premium$'))
 async def paytm_premium(client, query):
-    # Edit the existing message to show loading text
-    loading_message = await query.message.edit_text("Loading PayTM plans...")
+    await query.message.edit_text("Loading PayTM plans...")
+
+    await asyncio.sleep(1)  # Small delay to avoid flickering issues
 
     choose_plan = script.CHOOSE_PLAN
     await query.message.edit_text(
@@ -278,9 +279,6 @@ async def paytm_premium(client, query):
             ]
         )
     )
-    # Ensure "Loading PayTM plans..." is deleted
-    await asyncio.sleep(1)  # Small delay to avoid race conditions
-    await client.delete_messages(query.message.chat.id, loading_message.message_id)
 
 @Bot.on_callback_query(filters.regex(r'^paytm_(\d+)$'))
 async def generate_qr_code(client, query):
@@ -300,19 +298,21 @@ async def generate_qr_code(client, query):
                 [[InlineKeyboardButton("✅ Payment Done", callback_data=f"verify_{txn_id}_{user_id}_{amount}")]]
             )
         )
-        
+
         await query.message.edit_caption(
-            caption=f"Please pay using the above QR CODE.\n\n"
-                    f"The QR Code will expire in 5 minutes, so make sure to pay within 5 minutes.\n"
-                    f"Payment will be **automatically verified** after the payment.\n\n"
-                    f"🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
+            caption=(
+                "Please pay using the above QR CODE.\n\n"
+                "The QR Code will expire in **5 minutes**, so make sure to pay within that time.\n"
+                "Payment will be **automatically verified** after the payment.\n\n"
+                "🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
+            )
         )
 
-        # ✅ Corrected parameter for verify_payment_later
+        # Verify payment asynchronously
         asyncio.create_task(verify_payment_later(client, query.message, txn_id, user_id, amount))
 
     else:
-        await query.answer("Failed to generate QR Code. Please try again later.", show_alert=True)
+        await query.answer("❌ Failed to generate QR Code. Please try again later.", show_alert=True)
 
 
 @Bot.on_callback_query(filters.regex(r'^verify_(\S+)_(\d+)_(\d+)$'))

@@ -180,7 +180,9 @@ async def buy_premium_callback(client, query):
 
 @Bot.on_callback_query(filters.regex(r'^bharatpe_premium$'))
 async def bharatpe_premium(client, query):
-    loading_message = await query.message.edit("<b>Processing your BharatPe payment request...</b>")
+    await query.message.edit("<b>Processing your BharatPe payment request...</b>")
+
+    await asyncio.sleep(1)
 
     confirm_payment_keyboard = InlineKeyboardMarkup(
         [
@@ -195,8 +197,6 @@ async def bharatpe_premium(client, query):
         reply_markup=confirm_payment_keyboard
     )
     set_state(query.from_user.id, "waiting_for_utr")
-    await asyncio.sleep(1)  # Small delay to avoid race conditions
-    await client.delete_messages(query.message.chat.id, loading_message.message_id)
 
 @Bot.on_callback_query(filters.regex(r'^confirm_payment$'))
 async def handle_confirm_payment(client, query):
