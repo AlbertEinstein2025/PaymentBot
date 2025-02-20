@@ -137,7 +137,8 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
 
     if verification_result:
         print(f"DEBUG: txn_id={txn_id}, user_id={user_id}, amount={amount}, verification_result={verification_result}")
-        status = verification_result['status']
+        status, utr = verification_result['status'], verification_result['utr']
+        
 
         if status == "SUCCESS":
             plan_messages = {
@@ -229,7 +230,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                         print(f"Error sending notification to admin {admin_id}: {e}")
 
                 # Log Payment
-                await add_used_txnid("YD Premium Plans", user.username, user_id, txn_id, amount)
+                await add_used_txnid("YD Premium Plans", user.username, user_id, utr, amount)
 
                 # Send Thank You Message
                 await client.send_message(user_id, "<b>Thank you so much for subscribing to Premium 💖</b>")
