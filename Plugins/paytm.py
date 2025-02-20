@@ -12,7 +12,6 @@ import datetime
 from fpdf import FPDF
 import os
 import requests
-import aiofiles
 import json
 
 def generate_qr(user_id, amount):
@@ -280,10 +279,6 @@ async def paytm_premium(client, query):
             ]
         )
     )
-
-import requests
-import aiofiles
-import os
 
 @Bot.on_callback_query(filters.regex(r'^paytm_(\d+)$'))
 async def generate_qr_code(client, query):
