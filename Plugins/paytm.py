@@ -133,8 +133,16 @@ async def verify_txn_id(txn_id):
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
 async def paytm_automation(client, message, txn_id, user_id, amount):
-    verification_result = await verify_txn_id(txn_id)
+    
+    if await is_txnid_used(txn_id):
+        await verifying_message.delete()
+        await client.send_message(
+            chat_id=user_id,
+            text="<b>This UTR has already been used, Thank You</b>"
+        )
+        return
 
+    verification_result = await verify_txn_id(txn_id)
     if verification_result:
         print(f"DEBUG: txn_id={txn_id}, user_id={user_id}, amount={amount}, verification_result={verification_result}")
         status, utr = verification_result['status'], verification_result['utr']
@@ -210,11 +218,17 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
 
                 # Send Confirmation Message
                 expiry_time = new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')
-                VERIFY_Text = script.PAYTM_VERIFIED.format(amount, success_message, expiry_time)
+                if current_time_ist and new_expiry_time_ist:
+                    VERIFY_Text = script.PAYTM_VERIFIED.format(amount, success_message, expiry_time)
+                else:
+                    VERIFY_Text = script.PAYTM_VERIFIED2.format(amount, success_message)
 
-                await message.edit_text(VERIFY_Text)
-                await client.send_document(user_id, pdf_filename, caption="Here is your payment receipt.")
+                await verifying_message.delete()
 
+                await client.send_message(
+                    chat_id=user_id,
+                    text=VERIFY_Text
+                )
                 # Notify Admins
                 user = await client.get_users(user_id)
                 user_mention = user.mention
@@ -230,7 +244,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                         print(f"Error sending notification to admin {admin_id}: {e}")
 
                 # Log Payment
-                await add_used_txnid("YD Premium Plans", user.username, user_id, utr, amount)
+                await add_used_txnid("YD Premium Plans", user.username, user_id, txn_id, amount)
 
                 # Send Thank You Message
                 await client.send_message(user_id, "<b>Thank you so much for subscribing to Premium 💖</b>")
@@ -279,7 +293,7 @@ async def generate_qr_code(client, query):
             caption=f"Please pay using the above QR CODE.\n\n"
                     f"The QR Code will expire in 5 minutes, so make sure to pay within 5 minutes.\n"
                     f"Payment will be **automatically verified** after the payment.\n\n"
-                    f"🔹 If you've already paid, click the **Payment Done** button below.",
+                    f"🔹 If you've already paid still not verified, click the **Payment Done** button below.",
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("✅ Payment Done", callback_data=f"verify_{txn_id}_{user_id}_{amount}")]]
             )
@@ -307,12 +321,18 @@ async def manual_payment_verification(client, query):
         return
 
     if verification_result.get("status") == "SUCCESS":
+        # Stop verify_payment_later since payment is successful
+        stop_verify_payment_later(user_id)
+
         await paytm_automation(client, query.message, txn_id, user_id, amount)
+
     elif verification_result.get("status") == "FAILED":
         await query.answer("❌ Payment not found or not completed. Please try again later.", show_alert=True)
+
     else:
         await query.answer("❌ Payment verification failed. Contact support if the issue persists.", show_alert=True)
 
+verify_tasks = {}  # Dictionary to store running verification tasks
 
 async def verify_payment_later(client, message, txn_id, user_id, amount):
     max_attempts = 5  # Check up to 5 times (every 1 minute)
@@ -327,18 +347,22 @@ async def verify_payment_later(client, message, txn_id, user_id, amount):
 
             if status == "SUCCESS":
                 await paytm_automation(client, message, txn_id, user_id, amount)
+                verify_tasks.pop(txn_id, None)  # Remove task after successful verification
                 return  # Stop further checks
 
             last_status = status  # Update last known status
 
-    # After 5 minutes, decide the final message based on the last status
+    # After 5 minutes, send final status message
     if last_status == "FAILED":
         await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
     elif last_status:  # Only send if some status was received
         await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
 
-    # Delete the QR message
-    try:
-        await message.delete()
-    except Exception as e:
-        print(f"Failed to delete QR message: {e}")
+    verify_tasks.pop(txn_id, None)  # Ensure cleanup after completion
+
+async def stop_verify_payment_later(txn_id):
+    """Cancel verification task if needed."""
+    task = verify_tasks.pop(txn_id, None)
+    if task and not task.done():
+        task.cancel()
+
