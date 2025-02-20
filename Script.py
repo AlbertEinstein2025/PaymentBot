@@ -94,7 +94,7 @@ Pay Via App: {}</blockquote>
 
 🥳 Congratulations! Your premium subscription is now active on Both Bots until {}. ✨</blockquote>
 
-To Check Your Plan: Go to Both Bot and send /myplan for getting subscription info.⚡️</b>"""
+To Check Your Plan: <a href='https://t.me/YDMovieBot?start=myplan'>Clich Here⚡️</a></b>"""
 
     PAYMENT_VERIFIED2 = """
 <b>🎉 Payment Verified! 🎉
@@ -107,7 +107,7 @@ Pay Via App: {}</blockquote>
 
 There was an error activating your premium subscription. Please contact the admin @Mr_SpidyBot.
 
-To Check Your Plan: Go to Bot and send /myplan for subscription info.⚡️</b>"""
+To Check Your Plan: <a href='https://t.me/YDMovieBot?start=myplan'>Clich Here⚡️</a></b>"""
 
 
     PAYTM_VERIFIED = """
@@ -119,7 +119,7 @@ To Check Your Plan: Go to Bot and send /myplan for subscription info.⚡️</b>"
 
 🥳 Congratulations! Your premium subscription is now active on Both Bots until {}. ✨</blockquote>
 
-To Check Your Plan: Go to Both Bot and send /myplan for getting subscription info.⚡️</b>"""
+To Check Your Plan: <a href='https://t.me/YDMovieBot?start=myplan'>Clich Here⚡️</a></b>"""
 
     PAYTM_VERIFIED2 = """
 <b>🎉 Payment Verified! 🎉
@@ -130,4 +130,4 @@ Amount Received: ₹{}
 
 <blockquote>There was an error activating your premium subscription. Please contact the admin @Mr_SpidyBot.
 
-To Check Your Plan: Go to Bot and send /myplan for subscription info.⚡️</b></blockquote>"""
+To Check Your Plan: <a href='https://t.me/YDMovieBot?start=myplan'>Clich Here⚡️</a></b></blockquote>"""
