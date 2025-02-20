@@ -36,15 +36,18 @@ async def send_qr_code(client, user_id, amount):
             ),
         )
         
-        # Start verification process
-        asyncio.create_task(start_verification(txn_id, user_id))
+        # Start verification process (runs in the background)
+        asyncio.create_task(verify_payment_later(client, message, txn_id, user_id, amount))
 
         # Delete message after 5 minutes
-        await asyncio.sleep(300)
-        try:
-            await client.delete_messages(user_id, message.message_id)
-        except Exception as e:
-            print(f"Error deleting QR code message: {e}")
+        async def delete_qr_after_delay():
+            await asyncio.sleep(300)
+            try:
+                await client.delete_messages(user_id, message.message_id)
+            except Exception as e:
+                print(f"Error deleting QR code message: {e}")
+
+        asyncio.create_task(delete_qr_after_delay())  # Run in background
 
     else:
         await client.send_message(user_id, "❌ Failed to generate QR Code. Please try again later.")
@@ -353,32 +356,30 @@ async def manual_payment_verification(client, query):
 verify_tasks = {}  # Dictionary to store running verification tasks
 
 async def verify_payment_later(client, message, txn_id, user_id, amount):
-    max_attempts = 6  # Increase attempts (6 = ~6 minutes)
-    last_status = None  # Track last known status
-    check_interval = 30  # Check every 30 seconds instead of 1 minute
+    max_attempts = 10
+    last_status = None  
 
     for attempt in range(max_attempts):
-        await asyncio.sleep(check_interval)  # Wait before checking
+        await asyncio.sleep(30)
 
         verification_result = await verify_txn_id(txn_id)
         if verification_result:
-            status = verification_result.get("status")
+            status = verification_result['status']
 
             if status == "SUCCESS":
                 await paytm_automation(client, message, txn_id, user_id, amount)
-                verify_tasks.pop(txn_id, None)  # Remove task after success
+                verify_tasks.pop(txn_id, None)  # Cleanup
                 return  # Stop further checks
 
-            last_status = status  # Save last known status
+            last_status = status  
 
-    # If max attempts reached and still no success
+    # Ensure the full 5 minutes are completed before sending failure message
     if last_status == "FAILED":
-        await client.send_message(user_id, "<b>❌ Payment failed. Please try again.</b>")
-    elif last_status:  # If status was received but not "SUCCESS"
-        await client.send_message(user_id, "<b>⏳ Payment not received within 5 minutes. Please contact support.</b>")
+        await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
+    else:
+        await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
 
     verify_tasks.pop(txn_id, None)  # Cleanup
-
 
 async def stop_verify_payment_later(txn_id):
     """Cancel verification task if needed."""
