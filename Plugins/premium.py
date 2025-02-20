@@ -138,8 +138,7 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/52'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                    [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
-                    [InlineKeyboardButton("💰 Buy Now", callback_data="bharatpe_premium")]
+                    [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")]
             ]
         )
     )
@@ -182,6 +181,8 @@ async def buy_premium_callback(client, query):
 
 @Bot.on_callback_query(filters.regex(r'^bharatpe_premium$'))
 async def bharatpe_premium(client, query):
+    await query.message.edit("<b>Processing your BharatPe payment request...</b>")
+
     confirm_payment_keyboard = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton("🧾 Confirm Payment", callback_data="confirm_payment")]
@@ -189,7 +190,7 @@ async def bharatpe_premium(client, query):
     )
 
     await client.send_photo(
-        query.message.chat.id,
+        chat_id=query.message.chat.id,
         photo=QR_CODE,
         caption=script.PAYMENT.format(query.from_user.mention),
         reply_markup=confirm_payment_keyboard
@@ -403,9 +404,7 @@ Click below to browse our plans and unlock the premium experience! ✨</b>"""
                     InlineKeyboardButton('ᴛᴜᴛᴏʀɪᴀʟ♻️', url='https://t.me/YDUpdate/52'),
                     InlineKeyboardButton('ᴀʙᴏᴜᴛ🤖', callback_data='about')
                 ],
-                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")],
-                [InlineKeyboardButton("💰 Buy Now", callback_data="bharatpe_premium")]
+                [InlineKeyboardButton("✨ ᴄʜᴇᴄᴋ ᴘʟᴀɴs ✨", callback_data="premium_plans")]
             ]
         )
     )
-#---------------------------------------------------------------------------------------------#
