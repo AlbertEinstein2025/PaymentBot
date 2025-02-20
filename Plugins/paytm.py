@@ -36,21 +36,22 @@ async def send_qr_code(client, user_id, amount):
             ),
         )
 
-        # Store the message ID for later deletion
+        # Store the message ID for deletion
         qr_message_id = message.message_id  
 
-        # Start verification process (runs in the background)
+        # Start the verification process in the background
         asyncio.create_task(verify_payment_later(client, qr_message_id, txn_id, user_id, amount))
 
-        # Delete message after 5 minutes if still exists
+        # Delete the QR code after 5 minutes if payment is not verified
         async def delete_qr_after_delay():
-            await asyncio.sleep(300)
+            await asyncio.sleep(300)  # Wait for 5 minutes
             try:
+                print(f"Deleting QR message {qr_message_id} for user {user_id}")  # Debugging
                 await client.delete_messages(user_id, qr_message_id)
             except Exception as e:
                 print(f"Error deleting QR code message: {e}")
 
-        asyncio.create_task(delete_qr_after_delay())  # Run in background
+        asyncio.create_task(delete_qr_after_delay())  # Run deletion in the background
 
     else:
         await client.send_message(user_id, "❌ Failed to generate QR Code. Please try again later.")
@@ -153,7 +154,7 @@ async def verify_txn_id(txn_id):
 async def paytm_automation(client, message, txn_id, user_id, amount):
     
     if await is_txnid_used(txn_id):
-        await client.delete_messages(user_id, message.message_id)
+        await client.delete_messages(user_id, qr_message_id)
         await client.send_message(
             chat_id=user_id,
             text="<b>This QR has already been used, Thank You</b>"
@@ -377,7 +378,7 @@ async def verify_payment_later(client, message, txn_id, user_id, amount):
 
     # After 5 minutes, send failure message and stop verification
     if last_status == "FAILED":
-        await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
+        await client.send_message(user_id, "<b>Payment not found or failed. Please try again.</b>")
     else:
         await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
 
