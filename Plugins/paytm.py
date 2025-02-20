@@ -150,7 +150,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
         await message.delete()
         await client.send_message(
             chat_id=user_id,
-            text="<b>This UTR has already been used, Thank You</b>"
+            text="<b>This QR has already been used, Thank You</b>"
         )
         return
 
