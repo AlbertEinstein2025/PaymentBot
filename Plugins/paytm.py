@@ -264,7 +264,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
 
 @Bot.on_callback_query(filters.regex(r'^paytm_premium$'))
 async def paytm_premium(client, query):
-    await query.message.edit_text("Loading PayTM plans...")
+    await query.message.edit_text("<b>Loading PayTM plans...</b>")
 
     await asyncio.sleep(1)  # Small delay to avoid flickering issues
 

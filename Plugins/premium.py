@@ -180,22 +180,30 @@ async def buy_premium_callback(client, query):
 
 @Bot.on_callback_query(filters.regex(r'^bharatpe_premium$'))
 async def bharatpe_premium(client, query):
-    await query.message.edit("<b>Processing your BharatPe payment request...</b>")
+    try:
+        await query.message.edit_text("<b>Processing your BharatPe payment request...</b>", parse_mode="html")
 
-    await asyncio.sleep(1)
+        await asyncio.sleep(1)  # Small delay to ensure proper UI update
 
-    confirm_payment_keyboard = InlineKeyboardMarkup(
-        [
-            [InlineKeyboardButton("🧾 Confirm Payment", callback_data="confirm_payment")]
-        ]
-    )
+        confirm_payment_keyboard = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("🧾 Confirm Payment", callback_data="confirm_payment")]
+            ]
+        )
 
-    await client.send_photo(
-        chat_id=query.message.chat.id,
-        photo=QR_CODE,
-        caption=script.PAYMENT.format(query.from_user.mention),
-        reply_markup=confirm_payment_keyboard
-    )
+        await client.send_photo(
+            chat_id=query.message.chat.id,
+            photo=QR_CODE,
+            caption=script.PAYMENT.format(query.from_user.mention),
+            reply_markup=confirm_payment_keyboard
+        )
+
+        set_state(query.from_user.id, "waiting_for_utr")
+
+    except Exception as e:
+        print(f"Error in bharatpe_premium: {e}")
+        await query.answer("❌ Unable to process your request. Please try again later.", show_alert=True)
+
     set_state(query.from_user.id, "waiting_for_utr")
 
 @Bot.on_callback_query(filters.regex(r'^confirm_payment$'))
