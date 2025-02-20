@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton, ReplyKeyboardMarkup
 from bot import Bot 
 from pyrogram.types import InputMediaPhoto
 import asyncio
@@ -14,7 +14,6 @@ import datetime
 from fpdf import FPDF
 import os
 import requests
-from pyrogram.types import ReplyKeyboardRemove
 
 def download_image(image_url, local_filename):
     response = requests.get(image_url)
@@ -215,7 +214,7 @@ async def handle_confirm_payment(client, query):
 
         if get_state(user_id) == "processing_payment":
             reset_state(user_id)
-            await query.message.reply_text("<b>Times up! please try again 😮‍💨</b>", reply_markup=ReplyKeyboardRemove())
+            await query.message.reply_text("<b>Times up! please try again 😮‍💨</b>")
             await query.message.reply_text("<b>Don't worry, no need to pay again. Just click on Try Again Button and send your UTR number again to verify the payment.</b>", reply_markup=retry_btn)
 
 @Bot.on_message(filters.text & filters.private & filters.incoming, group=2)
@@ -369,17 +368,17 @@ async def handle_utr_input(client, message):
                     if os.path.exists(pdf_filename):
                         os.remove(pdf_filename)
 
-                    await message.reply_text("<b>Thank you so much for subscribing to Premium 💖</b>", reply_markup=ReplyKeyboardRemove())
+                    await message.reply_text("<b>Thank you so much for subscribing to Premium 💖</b>")
                 else:
                     await verifying_message.edit_text(f"<b>Incorrect payment amount.\n\n<blockquote>Amount : {amount}</blockquote>\n\n<blockquote>Payer Name : {payer}</blockquote>.\n\nPlease check the plan and contact Admin @Mr_SpidyBot.</b>")
             elif status == "FAILED":
-                await verifying_message.edit_text("<b>Payment verification failed. Please check the UTR and try again.</b>", reply_markup=ReplyKeyboardRemove())
+                await verifying_message.edit_text("<b>Payment verification failed. Please check the UTR and try again.</b>")
                 await start(client, message)
             else:
-                await verifying_message.edit_text("<b>An unexpected error occurred. Please try again later.</b>", reply_markup=ReplyKeyboardRemove())
+                await verifying_message.edit_text("<b>An unexpected error occurred. Please try again later.</b>")
                 await start(client, message)
         else:
-            await verifying_message.edit_text("<b>An error occurred while verifying the payment. Please try again later.</b>", reply_markup=ReplyKeyboardRemove())
+            await verifying_message.edit_text("<b>An error occurred while verifying the payment. Please try again later.</b>")
             await start(client, message)
 
         reset_state(user_id)
