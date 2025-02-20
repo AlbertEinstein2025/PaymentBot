@@ -132,7 +132,7 @@ async def verify_txn_id(txn_id):
         print("Error decoding JSON response.")
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
-async def paytm_automation(client, query, message, txn_id, user_id, amount):
+async def paytm_automation(client, message, txn_id, user_id, amount):
     
     if await is_txnid_used(txn_id):
         await verifying_message.delete()
@@ -222,8 +222,6 @@ async def paytm_automation(client, query, message, txn_id, user_id, amount):
                     VERIFY_Text = script.PAYTM_VERIFIED.format(amount, success_message, expiry_time)
                 else:
                     VERIFY_Text = script.PAYTM_VERIFIED2.format(amount, success_message)
-
-                await query.message.delete()
 
                 await client.send_message(
                     chat_id=user_id,
