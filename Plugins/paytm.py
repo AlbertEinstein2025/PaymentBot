@@ -22,20 +22,32 @@ def generate_qr(user_id, amount):
         return response["qr_url"], response["txn_id"]
     return None, None
 
-def send_qr_code(client, user_id, amount):  # Add `client` as an argument
+async def send_qr_code(client, user_id, amount):
     qr_url, txn_id = generate_qr(user_id, amount)
 
     if qr_url:
-        client.send_photo(  # Use `client` instead of `bot`
+        message = await client.send_photo(
             chat_id=user_id,
             photo=qr_url,
-            caption=f"Please pay on the above QR CODE.\n\n"
-                    f"The QR Code will expire in 5 minutes, so make sure to pay within 5 minutes.\n"
-                    f"Payment will be automatically verified after the payment.",
+            caption=(
+                "Please pay using the above QR CODE.\n\n"
+                "The QR Code will expire in 5 minutes, so make sure to pay within that time.\n"
+                "Payment will be automatically verified after the payment."
+            ),
         )
-        start_verification(txn_id, user_id)
+        
+        # Start verification process
+        asyncio.create_task(start_verification(txn_id, user_id))
+
+        # Delete message after 5 minutes
+        await asyncio.sleep(300)
+        try:
+            await client.delete_messages(user_id, message.message_id)
+        except Exception as e:
+            print(f"Error deleting QR code message: {e}")
+
     else:
-        client.send_message(user_id, "Failed to generate QR Code. Please try again later.")
+        await client.send_message(user_id, "❌ Failed to generate QR Code. Please try again later.")
 
 def download_image(image_url, local_filename):
     response = requests.get(image_url)
@@ -135,7 +147,7 @@ async def verify_txn_id(txn_id):
 async def paytm_automation(client, message, txn_id, user_id, amount):
     
     if await is_txnid_used(txn_id):
-        await verifying_message.delete()
+        await message.delete()
         await client.send_message(
             chat_id=user_id,
             text="<b>This UTR has already been used, Thank You</b>"
