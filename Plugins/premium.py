@@ -181,7 +181,7 @@ async def buy_premium_callback(client, query):
 @Bot.on_callback_query(filters.regex(r'^bharatpe_premium$'))
 async def bharatpe_premium(client, query):
     try:
-        await query.message.edit_text("<b>Processing your BharatPe payment request...</b>", parse_mode="html")
+        await query.message.edit_text("<b>Processing your BharatPe payment request...</b>")
 
         await asyncio.sleep(1)  # Small delay to ensure proper UI update
 
