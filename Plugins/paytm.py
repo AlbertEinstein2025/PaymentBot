@@ -211,7 +211,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                 pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
                 pdf.set_font('Arial', '', 12)
                 pdf.set_text_color(0, 0, 0)  # Black text
-                pdf.cell(0, 10, f'Payment Amount: ₹{amount}', ln=True)
+                pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
                 pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                 pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
                 pdf.ln(10)
