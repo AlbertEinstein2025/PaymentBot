@@ -1,5 +1,5 @@
-pyrogram
-TgCrypto
+pyrofork
+TgCrypto-pyrofork
 motor
 pymongo
 python-dotenv
