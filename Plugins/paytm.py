@@ -132,7 +132,7 @@ async def verify_txn_id(txn_id):
         print("Error decoding JSON response.")
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
-async def paytm_automation(client, message, txn_id, user_id, amount):
+async def paytm_automation(client, query, message, txn_id, user_id, amount):
     
     if await is_txnid_used(txn_id):
         await verifying_message.delete()
@@ -223,7 +223,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                 else:
                     VERIFY_Text = script.PAYTM_VERIFIED2.format(amount, success_message)
 
-                await verifying_message.delete()
+                await query.message.delete()
 
                 await client.send_message(
                     chat_id=user_id,
@@ -343,30 +343,32 @@ async def manual_payment_verification(client, query):
 verify_tasks = {}  # Dictionary to store running verification tasks
 
 async def verify_payment_later(client, message, txn_id, user_id, amount):
-    max_attempts = 5  # Check up to 5 times (every 1 minute)
-    last_status = None  # Track the last payment status
+    max_attempts = 6  # Increase attempts (6 = ~6 minutes)
+    last_status = None  # Track last known status
+    check_interval = 30  # Check every 30 seconds instead of 1 minute
 
     for attempt in range(max_attempts):
-        await asyncio.sleep(60)  # Wait for 1 minute
+        await asyncio.sleep(check_interval)  # Wait before checking
 
         verification_result = await verify_txn_id(txn_id)
         if verification_result:
-            status = verification_result['status']
+            status = verification_result.get("status")
 
             if status == "SUCCESS":
                 await paytm_automation(client, message, txn_id, user_id, amount)
-                verify_tasks.pop(txn_id, None)  # Remove task after successful verification
+                verify_tasks.pop(txn_id, None)  # Remove task after success
                 return  # Stop further checks
 
-            last_status = status  # Update last known status
+            last_status = status  # Save last known status
 
-    # After 5 minutes, send final status message
+    # If max attempts reached and still no success
     if last_status == "FAILED":
-        await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
-    elif last_status:  # Only send if some status was received
-        await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
+        await client.send_message(user_id, "<b>❌ Payment failed. Please try again.</b>")
+    elif last_status:  # If status was received but not "SUCCESS"
+        await client.send_message(user_id, "<b>⏳ Payment not received within 5 minutes. Please contact support.</b>")
 
-    verify_tasks.pop(txn_id, None)  # Ensure cleanup after completion
+    verify_tasks.pop(txn_id, None)  # Cleanup
+
 
 async def stop_verify_payment_later(txn_id):
     """Cancel verification task if needed."""
