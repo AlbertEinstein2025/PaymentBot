@@ -196,7 +196,7 @@ async def bharatpe_premium(client, query):
         caption=script.PAYMENT.format(query.from_user.mention),
         reply_markup=confirm_payment_keyboard
     )
-    await client.delete_messages(query.message.chat.id, loading_message.message_id)
+    await loading_message.delete()
     set_state(query.from_user.id, "waiting_for_utr")
 
 @Bot.on_callback_query(filters.regex(r'^confirm_payment$'))

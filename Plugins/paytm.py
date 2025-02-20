@@ -12,6 +12,7 @@ import datetime
 from fpdf import FPDF
 import os
 import requests
+import aiofiles
 import json
 
 def generate_qr(user_id, amount):
@@ -280,6 +281,10 @@ async def paytm_premium(client, query):
         )
     )
 
+import requests
+import aiofiles
+import os
+
 @Bot.on_callback_query(filters.regex(r'^paytm_(\d+)$'))
 async def generate_qr_code(client, query):
     amount = int(query.matches[0].group(1))
@@ -292,27 +297,55 @@ async def generate_qr_code(client, query):
         qr_url = response["qr_url"]
         txn_id = response["txn_id"]
 
-        await query.message.edit_media(
-            media=InputMediaPhoto(
-                qr_url,
-                caption=(
-                    "Please pay using the above QR CODE.\n\n"
-                    "The QR Code will expire in **5 minutes**, so make sure to pay within that time.\n"
-                    "Payment will be **automatically verified** after the payment.\n\n"
-                    "🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
+        try:
+            # Try sending as direct URL first
+            await query.message.edit_media(
+                media=InputMediaPhoto(
+                    qr_url,
+                    caption=(
+                        "Please pay using the above QR CODE.\n\n"
+                        "The QR Code will expire in **5 minutes**, so make sure to pay within that time.\n"
+                        "Payment will be **automatically verified** after the payment.\n\n"
+                        "🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
+                    )
+                ),
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("✅ Payment Done", callback_data=f"verify_{txn_id}_{user_id}_{amount}")]]
                 )
-            ),
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("✅ Payment Done", callback_data=f"verify_{txn_id}_{user_id}_{amount}")]]
             )
-        )
+        except Exception as e:
+            print(f"Failed to send QR as URL: {e}")
+
+            # Download the QR image manually and send it
+            qr_image_path = f"downloads/qr_{user_id}.png"
+            response = requests.get(qr_url)
+
+            if response.status_code == 200:
+                with open(qr_image_path, "wb") as f:
+                    f.write(response.content)
+
+                await query.message.delete()  # Delete previous message to avoid edit issues
+                await client.send_photo(
+                    chat_id=query.message.chat.id,
+                    photo=qr_image_path,
+                    caption=(
+                        "Please pay using the above QR CODE.\n\n"
+                        "The QR Code will expire in **5 minutes**, so make sure to pay within that time.\n"
+                        "Payment will be **automatically verified** after the payment.\n\n"
+                        "🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
+                    ),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("✅ Payment Done", callback_data=f"verify_{txn_id}_{user_id}_{amount}")]]
+                    )
+                )
+
+                os.remove(qr_image_path)  # Clean up after sending
 
         # Verify payment asynchronously
         asyncio.create_task(verify_payment_later(client, query.message, txn_id, user_id, amount))
 
     else:
         await query.answer("❌ Failed to generate QR Code. Please try again later.", show_alert=True)
-
 
 @Bot.on_callback_query(filters.regex(r'^verify_(\S+)_(\d+)_(\d+)$'))
 async def manual_payment_verification(client, query):
