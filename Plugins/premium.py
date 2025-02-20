@@ -305,7 +305,7 @@ async def handle_utr_input(client, message):
                     pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
                     pdf.set_font('Arial', '', 12)
                     pdf.set_text_color(0, 0, 0)  # Black text
-                    pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
+                    pdf.cell(0, 10, f'Payment Amount: ₹{amount}', ln=True)
                     pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                     pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
                     pdf.cell(0, 10, f'Paid by App: {app}', ln=True)
@@ -373,7 +373,7 @@ async def handle_utr_input(client, message):
 
                     await message.reply_text("<b>Thank you so much for subscribing to Premium 💖</b>")
                 else:
-                    await verifying_message.edit_text(f"<b>Incorrect payment amount.\n\n<blockquote>Amount : {amount}</blockquote>\n\n<blockquote>Payer Name : {payer}</blockquote>.\n\nPlease check the plan and contact Admin @Mr_SpidyBot.</b>")
+                    await verifying_message.edit_text(f"<b>Incorrect payment amount.\n\n<blockquote>Amount : ₹{amount}</blockquote>\n\n<blockquote>Payer Name : {payer}</blockquote>.\n\nPlease check the plan and contact Admin @Mr_SpidyBot.</b>")
             elif status == "FAILED":
                 await verifying_message.edit_text("<b>Payment verification failed. Please check the UTR and try again.</b>")
                 await start(client, message)

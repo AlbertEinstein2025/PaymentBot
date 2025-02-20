@@ -25,9 +25,7 @@ OWNER_ID = 1053777957
 
 LOG_CHANNEL_ID = -1002086314209 # Log Channel to store user premium data
 
-DATABASE_URI = "mongodb+srv://Spidy:MongoDB1432@autofilter.zqu7rr3.mongodb.net/?retryWrites=true&w=majority"
-SECONDDB_URI = "mongodb+srv://spidy:MongoDB1432@cluster1.ssqidl2.mongodb.net/?retryWrites=true&w=majority"
-THIRD_URI = "mongodb+srv://userdb:MongoDB1432@userdata.yvuio.mongodb.net/?retryWrites=true&w=majority"
+DATABASE_URI = "mongodb+srv://userdb:MongoDB1432@userdata.yvuio.mongodb.net/?retryWrites=true&w=majority"
 DATABASE_NAME = "YourDemandZone"
 COLLECTION_NAME = 'YourDemandZone'
 PORT = os.environ.get('PORT', '8080')

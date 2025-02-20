@@ -35,15 +35,18 @@ async def send_qr_code(client, user_id, amount):
                 "Payment will be automatically verified after the payment."
             ),
         )
-        
-        # Start verification process (runs in the background)
-        asyncio.create_task(verify_payment_later(client, message, txn_id, user_id, amount))
 
-        # Delete message after 5 minutes
+        # Store the message ID for later deletion
+        qr_message_id = message.message_id  
+
+        # Start verification process (runs in the background)
+        asyncio.create_task(verify_payment_later(client, qr_message_id, txn_id, user_id, amount))
+
+        # Delete message after 5 minutes if still exists
         async def delete_qr_after_delay():
             await asyncio.sleep(300)
             try:
-                await client.delete_messages(user_id, message.message_id)
+                await client.delete_messages(user_id, qr_message_id)
             except Exception as e:
                 print(f"Error deleting QR code message: {e}")
 
@@ -83,7 +86,7 @@ class PDF(FPDF):
         # Print the right-aligned text
         self.cell(0, 10, 'Group Name: YD Movie Zone', 0, 1, 'R')
         self.set_xy(page_width - 70, 13)
-        self.cell(0, 10, 'Grp Username: @YDMovieZone', 0, 1, 'R')
+        self.cell(0, 10, 'Grp Username: @YDMovieZone2', 0, 1, 'R')
         self.set_xy(page_width - 70, 18)
         self.cell(0, 10, 'Contact us: @Mr_SpidyBot', 0, 1, 'R')
         self.ln(6)
@@ -150,7 +153,7 @@ async def verify_txn_id(txn_id):
 async def paytm_automation(client, message, txn_id, user_id, amount):
     
     if await is_txnid_used(txn_id):
-        await message.delete()
+        await client.delete_messages(user_id, message.message_id)
         await client.send_message(
             chat_id=user_id,
             text="<b>This QR has already been used, Thank You</b>"
@@ -159,7 +162,6 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
 
     verification_result = await verify_txn_id(txn_id)
     if verification_result:
-        print(f"DEBUG: txn_id={txn_id}, user_id={user_id}, amount={amount}, verification_result={verification_result}")
         status, utr = verification_result['status'], verification_result['utr']
         
 
@@ -208,7 +210,7 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                 pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
                 pdf.set_font('Arial', '', 12)
                 pdf.set_text_color(0, 0, 0)  # Black text
-                pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
+                pdf.cell(0, 10, f'Payment Amount: ₹{amount}', ln=True)
                 pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
                 pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
                 pdf.ln(10)
@@ -343,7 +345,7 @@ async def manual_payment_verification(client, query):
 
     if verification_result.get("status") == "SUCCESS":
         # Stop verify_payment_later since payment is successful
-        stop_verify_payment_later(user_id)
+        await stop_verify_payment_later(user_id)
 
         await paytm_automation(client, query.message, txn_id, user_id, amount)
 
@@ -356,11 +358,11 @@ async def manual_payment_verification(client, query):
 verify_tasks = {}  # Dictionary to store running verification tasks
 
 async def verify_payment_later(client, message, txn_id, user_id, amount):
-    max_attempts = 10
+    max_attempts = 10 
     last_status = None  
 
     for attempt in range(max_attempts):
-        await asyncio.sleep(30)
+        await asyncio.sleep(30)  # Wait for 1 minute before checking
 
         verification_result = await verify_txn_id(txn_id)
         if verification_result:
@@ -373,11 +375,13 @@ async def verify_payment_later(client, message, txn_id, user_id, amount):
 
             last_status = status  
 
-    # Ensure the full 5 minutes are completed before sending failure message
+    # After 5 minutes, send failure message and stop verification
     if last_status == "FAILED":
         await client.send_message(user_id, "<b>Payment failed. Please try again.</b>")
     else:
         await client.send_message(user_id, "<b>Payment not received within 5 minutes. Please try again.</b>")
+
+    asyncio.create_task(stop_verify_payment_later(txn_id))  # Run in background
 
     verify_tasks.pop(txn_id, None)  # Cleanup
 

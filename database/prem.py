@@ -7,12 +7,6 @@ from config import *
 client = AsyncIOMotorClient(DATABASE_URI)
 mydb = client[DATABASE_NAME]
 
-client2 = AsyncIOMotorClient(SECONDDB_URI)
-mydb2 = client2[DATABASE_NAME]
-
-client3 = AsyncIOMotorClient(THIRD_URI)
-mydb3 = client3[DATABASE_NAME]
-
 #direct importing from utils causing loop, directly added here so no error should come.
 def extract_value_and_unit(ts):
         value = ""
@@ -52,13 +46,7 @@ class Database:
     
     def __init__(self):
         self.col = mydb.users
-        self.users = mydb.uersz
-
-        self.col2 = mydb2.users
-        self.users2 = mydb2.uersz
-
-        self.col3 = mydb3.users
-        self.users3 = mydb3.uersz        
+        self.users = mydb.uersz      
 
     def new_user(self, id, name):
         return dict(
@@ -71,14 +59,10 @@ class Database:
         )
     async def get_user(self, user_id):
         user_data = await self.users.find_one({"id": user_id})
-        user_data2 = await self.users2.find_one({"id": user_id})
-        user_data3 = await self.users3.find_one({"id": user_id})
-        return user_data, user_data2, user_data3
+        return user_data
         
     async def update_user(self, user_data):
         await self.users.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
-        await self.users2.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
-        await self.users3.update_one({"id": user_data["id"]}, {"$set": user_data}, upsert=True)
 
     async def has_premium_access(self, user_id):
         """
@@ -95,8 +79,6 @@ class Database:
                     else:
                         # Expiry time exists but has passed; reset it
                         await self.col.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                        await self.col2.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
-                        await self.col3.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
         return False
 
     async def remove_premium_access(self, user_id):
