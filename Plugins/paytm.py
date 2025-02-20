@@ -136,7 +136,7 @@ async def generate_pdf_receipt(user_id, amount, txn_id, current_time_ist):
 
     pdf = PDF
     # Title Section
-    print(f"Font name: {'Arial'}, Style: {'B'}, Size: {repr(18)}")
+    print(f"Font name: {'Arial'}, Style: {repr('B')}, Type: {type('B')}, Size: {repr(18)}")
     pdf.set_font('Arial', 'B', 18)
     pdf.set_fill_color(255, 0, 0)  # Red background
     pdf.set_text_color(255, 255, 255)  # White text
