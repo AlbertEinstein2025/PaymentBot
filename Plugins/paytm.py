@@ -293,18 +293,17 @@ async def generate_qr_code(client, query):
         txn_id = response["txn_id"]
 
         await query.message.edit_media(
-            media=InputMediaPhoto(qr_url),
+            media=InputMediaPhoto(
+                qr_url,
+                caption=(
+                    "Please pay using the above QR CODE.\n\n"
+                    "The QR Code will expire in **5 minutes**, so make sure to pay within that time.\n"
+                    "Payment will be **automatically verified** after the payment.\n\n"
+                    "🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
+                )
+            ),
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("✅ Payment Done", callback_data=f"verify_{txn_id}_{user_id}_{amount}")]]
-            )
-        )
-
-        await query.message.edit_caption(
-            caption=(
-                "Please pay using the above QR CODE.\n\n"
-                "The QR Code will expire in **5 minutes**, so make sure to pay within that time.\n"
-                "Payment will be **automatically verified** after the payment.\n\n"
-                "🔹 If you've already paid but it's still not verified, click the **Payment Done** button below."
             )
         )
 
