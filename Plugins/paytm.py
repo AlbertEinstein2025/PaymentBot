@@ -264,12 +264,12 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
 
 @Bot.on_callback_query(filters.regex(r'^paytm_premium$'))
 async def paytm_premium(client, query):
-    await query.message.edit("<b>Loading PayTM plans...</b>")
+    # Edit the existing message to show loading text
+    loading_message = await query.message.edit_text("Loading PayTM plans...")
 
     choose_plan = script.CHOOSE_PLAN
-    await client.send_message(
-        chat_id=query.message.chat.id,
-        text=choose_plan,
+    await query.message.edit_text(
+        choose_plan,
         reply_markup=InlineKeyboardMarkup(
             [
                 [InlineKeyboardButton('₹1 = 1 day', callback_data='paytm_1')],
@@ -278,6 +278,9 @@ async def paytm_premium(client, query):
             ]
         )
     )
+    # Ensure "Loading PayTM plans..." is deleted
+    await asyncio.sleep(1)  # Small delay to avoid race conditions
+    await client.delete_messages(query.message.chat.id, loading_message.message_id)
 
 @Bot.on_callback_query(filters.regex(r'^paytm_(\d+)$'))
 async def generate_qr_code(client, query):
