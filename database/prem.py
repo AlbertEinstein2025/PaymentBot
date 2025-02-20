@@ -87,7 +87,7 @@ class Database:
         updated = False
 
         # List of collections to iterate over
-        collections = [self.users, self.users2, self.users3]
+        collections = [self.users]
 
         for collection in collections:
             result = await collection.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
