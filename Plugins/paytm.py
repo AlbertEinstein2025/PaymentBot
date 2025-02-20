@@ -132,39 +132,6 @@ async def verify_txn_id(txn_id):
         print("Error decoding JSON response.")
         return {"status": "ERROR", "message": "Invalid JSON response."}
 
-async def generate_pdf_receipt(user_id, amount, txn_id, current_time_ist):
-
-    pdf = PDF
-    # Title Section
-    print(f"Font name: {'Arial'}, Style: {repr('B')}, Type: {type('B')}, Size: {repr(18)}")
-    pdf.set_font('Arial', 'b', 18)
-    pdf.set_fill_color(255, 0, 0)  # Red background
-    pdf.set_text_color(255, 255, 255)  # White text
-    pdf.cell(0, 15, 'Payment Receipt', 0, 1, 'C', 1)
-    pdf.ln(10)
-
-    # Customer Information Section
-    pdf.add_section_box('Customer Information', (204, 204, 255))  # Light purple background
-    pdf.set_font('Arial', '', 12)
-    pdf.set_text_color(0, 0, 0)  # Black text
-    pdf.cell(0, 10, f'Customer Name: N/A', ln=True)
-    pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
-    pdf.ln(10)
-
-    # Transaction Details Section
-    pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
-    pdf.set_font('Arial', '', 12)
-    pdf.set_text_color(0, 0, 0)  # Black text
-    pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
-    pdf.cell(0, 10, f'Transaction ID: {txn_id}', ln=True)
-    pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
-    pdf.ln(10)
-
-    # Save PDF
-    pdf_filename = f"payment_receipt_{user_id}.pdf"
-    pdf.output(pdf_filename)
-    return pdf_filename
-
 async def paytm_automation(client, message, txn_id, user_id, amount):
     verification_result = await verify_txn_id(txn_id)
 
@@ -191,8 +158,54 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                 # Activate Premium Plan
                 current_time_ist, new_expiry_time_ist = await give_premium(user_id, time_input)
 
-                # Generate PDF Receipt
-                pdf_filename = await generate_pdf_receipt(user_id, amount, txn_id, current_time_ist)
+               # Initialize PDF
+                pdf = PDF()
+                pdf.add_page()
+
+                # Add border
+                pdf.add_border()
+
+                # Title Section
+                pdf.set_font('Arial', 'B', 18)
+                pdf.set_fill_color(255, 0, 0)  # Red background
+                pdf.set_text_color(255, 255, 255)  # White text
+                pdf.cell(0, 15, 'Payment Receipt', 0, 1, 'C', 1)
+                pdf.ln(10)
+
+                # Customer Information Section
+                pdf.add_section_box('Customer Information', (204, 204, 255))  # Light purple background
+                pdf.set_font('Arial', '', 12)
+                pdf.set_text_color(0, 0, 0)  # Black text
+                pdf.cell(0, 10, f'Customer Name: N/A', ln=True)
+                pdf.cell(0, 10, f'Telegram ID: {user_id}', ln=True)
+                pdf.ln(10)
+
+                # Transaction Details Section
+                pdf.add_section_box('Transaction Details', (204, 255, 204))  # Light green background
+                pdf.set_font('Arial', '', 12)
+                pdf.set_text_color(0, 0, 0)  # Black text
+                pdf.cell(0, 10, f'Payment Amount: {amount}', ln=True)
+                pdf.cell(0, 10, f'Transaction ID: {utr}', ln=True)
+                pdf.cell(0, 10, f'Transaction Date: {current_time_ist.strftime("%Y-%m-%d %H:%M:%S IST")}', ln=True)
+                pdf.ln(10)
+
+                # Item Table
+                pdf.set_font('Arial', 'B', 12)
+                pdf.set_fill_color(255, 204, 204)  # Light red background
+                pdf.set_text_color(0, 0, 0)  # Black text
+                pdf.cell(50, 10, 'Item', border=1, fill=True)
+                pdf.cell(50, 10, 'Validity (days)', border=1, fill=True)
+                pdf.cell(50, 10, 'Amount (INR)', border=1, fill=True, ln=True)
+
+                pdf.set_font('Arial', '', 12)
+                pdf.set_fill_color(255, 255, 255)  # White background for table cells
+                pdf.cell(50, 10, "Premium Subscription", border=1, fill=True)
+                pdf.cell(50, 10, time_input, border=1, fill=True)
+                pdf.cell(50, 10, str(amount), border=1, fill=True, ln=True)
+
+                # Save PDF
+                pdf_filename = f"payment_receipt_{user_id}.pdf"
+                pdf.output(pdf_filename)
 
                 # Send Confirmation Message
                 expiry_time = new_expiry_time_ist.strftime('%Y-%m-%d %H:%M:%S IST')
@@ -221,9 +234,14 @@ async def paytm_automation(client, message, txn_id, user_id, amount):
                 # Send Thank You Message
                 await client.send_message(user_id, "<b>Thank you so much for subscribing to Premium 💖</b>")
 
-                # Cleanup
+                # Step 4: Send PDF receipt to the user
+                with open(pdf_filename, 'rb') as pdf_file:
+                    await client.send_document(user_id, pdf_file, caption="Here is your payment receipt.")
+                
+                # Clean up
                 if os.path.exists(pdf_filename):
                     os.remove(pdf_filename)
+
             else:
                 await message.edit_text(f"❌ Incorrect payment amount: ₹{amount}\nPlease contact @Mr_SpidyBot.")
         else:
