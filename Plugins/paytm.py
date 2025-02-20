@@ -285,6 +285,9 @@ async def generate_qr_code(client, query):
     amount = int(query.matches[0].group(1))  # Extract amount from callback data
     user_id = query.from_user.id
 
+    # Delete the plan selection message
+    await query.message.delete()
+
     # Generate QR Code
     url = f"https://api.ispidy.com/paytm/qr_generator.php?id={user_id}&amount={amount}"
     response = requests.get(url).json()
@@ -304,11 +307,11 @@ async def generate_qr_code(client, query):
             )
         )
 
-        # Start Automatic Verification
+        # Verify payment asynchronously
         asyncio.create_task(verify_payment_later(client, verifying_message, txn_id, user_id, amount))
 
     else:
-        await query.answer("Failed to generate QR Code. Please try again later.", show_alert=True)
+        await query.answer("❌ Failed to generate QR Code. Please try again later.", show_alert=True)
 
 @Bot.on_callback_query(filters.regex(r'^verify_(\S+)_(\d+)_(\d+)$'))
 async def manual_payment_verification(client, query):
